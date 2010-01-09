@@ -3,6 +3,13 @@
 
 void move_pacman(int direction)
 {
+	if (
+		direction == UP && pacman_direction == DOWN ||
+		direction == DOWN && pacman_direction == UP ||
+		direction == RIGHT && pacman_direction == LEFT ||
+		direction == LEFT && pacman_direction == RIGHT) {
+		pacman_direction = direction;
+	}
 	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0 && direction) {
 		int x = pacman_position.x / IMAGE_HEIGHT;
 		int y = pacman_position.y / IMAGE_WIDTH;
