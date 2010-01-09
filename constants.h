@@ -1,0 +1,5 @@
+#define MAP_HEIGHT 31
+#define MAP_WIDTH 30
+#define IMAGE_HEIGHT 25
+#define IMAGE_WIDTH 25
+

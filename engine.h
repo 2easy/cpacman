@@ -20,6 +20,6 @@ extern int map[31][30];
 extern int n, m, done, state;
 int previous_direction = 2;
 
-void move(int n1, int m1, int direction, SDL_Surface *pacman_sth_pic);
+void move(int n1, int m1, int direction);
 
 #endif

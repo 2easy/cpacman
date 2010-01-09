@@ -54,6 +54,10 @@ int map[31][30] =
 /*----------------------------------------------------------------------------*/
 int done = 0, n = 23, m = 15, state = 0;
 
+void draw() {
+	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
+	draw_dots();
+}
 int main(int argc, char *args[])
 {
 	/*SDL initialization*/
@@ -89,12 +93,13 @@ int main(int argc, char *args[])
 	init_bitmap_rect(confused, &clyde_position, 14, 15, 2);
 	init_bitmap_rect(ground, &background_dest, 0, 1, 3);
 	/*Draw start positions*/
-	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
+	/*
 	SDL_BlitSurface(pacman_left_pic, &pacman[0], screen, &pacman_position);
 	SDL_BlitSurface(blinky_pic, &blinky[3], screen, &blinky_position);
 	SDL_BlitSurface(inky_pic, &inky[1], screen, &inky_position);
 	SDL_BlitSurface(pinky_pic, &pinky[1], screen, &pinky_position);
-	SDL_BlitSurface(clyde_pic, &clyde[1], screen, &clyde_position);
+	SDL_BlitSurface(clyde_pic, &clyde[1], screen, &clyde_position);*/
+
 	SDL_Flip(screen);
 	map[n][m] = 80;
 	map[11][15] = 9;
@@ -103,14 +108,13 @@ int main(int argc, char *args[])
 	map[14][15] = 9;
 	while(!done)
 	{
+		draw();
 		while(SDL_PollEvent(&event))
 		{
 			if(event.type == SDL_QUIT)
 				done = 1;
 			if (event.type == SDL_KEYDOWN)
 			{
-				background_dest.x = pacman_position.x;
-				background_dest.y = pacman_position.y;
 				n = pacman_position.y/25;
 				m = pacman_position.x/25;
 				switch (event.key.keysym.sym)
