@@ -1,31 +1,52 @@
 #include"engine.h"
 #include"constants.h"
 
-void move(int n1, int m1, int direction)
+void move_pacman(int direction)
 {
+	switch (direction)
+	{
+		case RIGHT:
+			pacman_position.x += PACMAN_SPEED;
+			break;
+		case LEFT:
+			pacman_position.x -= PACMAN_SPEED;
+			break;
+		case UP:
+			pacman_position.y -= PACMAN_SPEED;
+			break;
+		case DOWN:
+			pacman_position.y += PACMAN_SPEED;
+			break;
+		default:
+			printf("direction %d\n",direction);
+		 	exit(0);
+	}
+	/*int next = map[n1][m1];
+	if (next == EMPTY || next == PILL || next == POWERUP) {
+		switch (direction)
+		{
+			case 1:
+				pacman_position.x += IMAGE_WIDTH;
+				previous_direction = 1;
+				break;
+			case 2:
+				pacman_position.x -= IMAGE_WIDTH;
+				previous_direction = 2;
+				break;
+			case 3:
+				pacman_position.y -=IMAGE_HEIGHT;
+				previous_direction = 3;
+				break;
+			case 4:
+				pacman_position.y +=IMAGE_HEIGHT;
+				previous_direction = 4;
+				break;
+		}
+	}
 	switch (map[n1][m1])
 	{
 
 		case 1:
-			switch (direction)
-			{
-				case 1:
-					pacman_position.x += IMAGE_WIDTH;
-					previous_direction = 1;
-					break;
-				case 2:
-					pacman_position.x -= IMAGE_WIDTH;
-					previous_direction = 2;
-					break;
-				case 3:
-					pacman_position.y -=IMAGE_HEIGHT;
-					previous_direction = 3;
-					break;
-				case 4:
-					pacman_position.y +=IMAGE_HEIGHT;
-					previous_direction = 4;
-					break;
-			}
 			map[n][m] = 1;
 			map[n1][m1] = 80;
 				break;
@@ -82,7 +103,7 @@ void move(int n1, int m1, int direction)
 		case 9:
 			done = 1;
 			break;
-		/*
+		
 		default:
 			if (previous_direction == direction)
 				if (++state < 5)
@@ -93,6 +114,7 @@ void move(int n1, int m1, int direction)
 					if (state == 9)
 						state = 0;
 				}
-		*/
+		
 	}
+	*/
 }

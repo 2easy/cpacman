@@ -1,10 +1,8 @@
 #include<SDL.h>
 #include "SDL_audio.h"
 #include "sound.h"
-#define RIGHT 1
-#define LEFT 2
-#define UP 3
-#define DOWN 4
+#include "constants.h"
+#include "video.h"
 /*Surfaces declarations*/
 SDL_Surface *screen = NULL;
 SDL_Surface *blinky_pic, *inky_pic, *pinky_pic, *clyde_pic, *confused_pic;
@@ -57,6 +55,7 @@ int done = 0, n = 23, m = 15, state = 0;
 void draw() {
 	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
 	draw_dots();
+	SDL_BlitSurface(pacman_left_pic, &pacman[0], screen, &pacman_position);
 }
 int main(int argc, char *args[])
 {
@@ -94,7 +93,6 @@ int main(int argc, char *args[])
 	init_bitmap_rect(ground, &background_dest, 0, 1, 3);
 	/*Draw start positions*/
 	/*
-	SDL_BlitSurface(pacman_left_pic, &pacman[0], screen, &pacman_position);
 	SDL_BlitSurface(blinky_pic, &blinky[3], screen, &blinky_position);
 	SDL_BlitSurface(inky_pic, &inky[1], screen, &inky_position);
 	SDL_BlitSurface(pinky_pic, &pinky[1], screen, &pinky_position);
@@ -106,8 +104,10 @@ int main(int argc, char *args[])
 	map[14][13] = 9;
 	map[14][14] = 9;
 	map[14][15] = 9;
+	int direction = RIGHT;
 	while(!done)
 	{
+		move_pacman(direction);
 		draw();
 		while(SDL_PollEvent(&event))
 		{
@@ -115,21 +115,19 @@ int main(int argc, char *args[])
 				done = 1;
 			if (event.type == SDL_KEYDOWN)
 			{
-				n = pacman_position.y/25;
-				m = pacman_position.x/25;
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_RIGHT:
-						move(n, m+1, RIGHT, pacman_right_pic);
+						direction = RIGHT;
 						break;
 					case SDLK_LEFT:
-						move(n, m-1, LEFT, pacman_left_pic);
+						direction = LEFT;
 						break;
 					case SDLK_UP:
-						move(n-1, m, UP, pacman_up_pic);
+						direction = UP;
 						break;
 					case SDLK_DOWN:
-						move(n+1, m, DOWN, pacman_down_pic);
+						direction = DOWN;
 						break;
 					case SDLK_ESCAPE:
 						done = 1;
