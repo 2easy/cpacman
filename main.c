@@ -135,6 +135,8 @@ int main(int argc, char *args[])
 						done = 1;
 						break;
 				}
+			} else if (event.type == SDL_KEYUP) {
+				direction = NONE;
 			}
 		}
 		SDL_Flip(screen);

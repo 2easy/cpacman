@@ -4,10 +4,32 @@
 void move_pacman(int direction)
 {
 	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0 && direction) {
-		pacman_direction = direction;
+		int x = pacman_position.x / IMAGE_HEIGHT;
+		int y = pacman_position.y / IMAGE_WIDTH;
+		switch (direction)
+		{
+			case RIGHT:
+				x++;
+				break;
+			case LEFT:
+				x--;
+				break;
+			case UP:
+				y--;
+				break;
+			case DOWN:
+				y++;
+				break;
+			default:
+				printf("direction %d\n",direction);
+				exit(0);
+		}
+		if (map[y][x] == EMPTY || map[y][x] == PILL) {
+			pacman_direction = direction;
+		}
 	}
 
-	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0 && direction) {
+	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0) {
 		int x = pacman_position.x / IMAGE_HEIGHT;
 		int y = pacman_position.y / IMAGE_WIDTH;
 		switch (pacman_direction)
