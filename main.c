@@ -14,11 +14,12 @@ SDL_Event event;
 SDL_Rect blinky[4], inky[4], pinky[4], clyde[4], confused[2];
 SDL_Rect blinky_position, inky_position, pinky_position, clyde_position;
 SDL_Rect pacman[5], pacman_position;
+int pacman_direction;
 SDL_Rect ground[3], background_dest;
 /*--------------------------Map initialization-------------------------------*/
 /*------0 -> wall, 1 -> ground, 2 -> pill, 3 ->super pill, 4 -> teleport----*/
 int map[31][30] =
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	, 0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0
 	, 0,0,2,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,2,0,0,0,0,2,0,0
 	, 0,0,3,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,2,0,0,0,0,3,0,0
@@ -60,7 +61,8 @@ void draw() {
 int main(int argc, char *args[])
 {
 	/*SDL initialization*/
-	if ((screen = SDL_SetVideoMode(750,775,32,SDL_SWSURFACE|SDL_FULLSCREEN)) == NULL)
+//SDL_FULLSCREEN
+	if ((screen = SDL_SetVideoMode(750,775,32,SDL_SWSURFACE)) == NULL)
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -99,12 +101,12 @@ int main(int argc, char *args[])
 	SDL_BlitSurface(clyde_pic, &clyde[1], screen, &clyde_position);*/
 
 	SDL_Flip(screen);
-	map[n][m] = 80;
-	map[11][15] = 9;
+	/*map[11][15] = 9;
 	map[14][13] = 9;
 	map[14][14] = 9;
-	map[14][15] = 9;
-	int direction = RIGHT;
+	map[14][15] = 9;*/
+	pacman_direction = LEFT;
+	int direction = NONE;
 	while(!done)
 	{
 		move_pacman(direction);
