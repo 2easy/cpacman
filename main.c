@@ -101,7 +101,6 @@ int main(int argc, char *args[])
 	map[14][13] = 9;
 	map[14][14] = 9;
 	map[14][15] = 9;
-	play_sound("theme.wav");
 	while(!done)
 	{
 		while(SDL_PollEvent(&event))
