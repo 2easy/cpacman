@@ -2,7 +2,7 @@
 #define MAP_WIDTH 30
 #define IMAGE_HEIGHT 25
 #define IMAGE_WIDTH 25
-#define PACMAN_SPEED 3
+#define PACMAN_SPEED 1
 
 #define WALL 0
 #define EMPTY 1
