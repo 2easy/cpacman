@@ -31,7 +31,7 @@ void move_pacman(int direction)
 				printf("direction %d\n",direction);
 				exit(0);
 		}
-		if (map[y][x] == EMPTY || map[y][x] == PILL) {
+		if (map[y][x] == EMPTY || map[y][x] == PILL || map[y][x] == POWERUP) {
 			pacman_direction = direction;
 		}
 	}
@@ -57,7 +57,11 @@ void move_pacman(int direction)
 				printf("direction %d\n",direction);
 				exit(0);
 		}
-		if (map[y][x] == EMPTY || map[y][x] == PILL) {
+		if (map[y][x] == EMPTY) {
+		} else if (map[y][x] == PILL) {
+			map[y][x] = EMPTY;
+		} else if (map[y][x] == POWERUP) {
+			map[y][x] = EMPTY;
 		} else {
 			return;
 		}
@@ -70,16 +74,16 @@ void move_pacman(int direction)
 	switch (pacman_direction)
 	{
 		case RIGHT:
-			next_x += PACMAN_SPEED;
+			next_x += 1;
 			break;
 		case LEFT:
-			next_x -= PACMAN_SPEED;
+			next_x -= 1;
 			break;
 		case UP:
-			next_y -= PACMAN_SPEED;
+			next_y -= 1;
 			break;
 		case DOWN:
-			next_y += PACMAN_SPEED;
+			next_y += 1;
 			break;
 		default:
 			printf("direction %d\n",direction);

@@ -109,7 +109,10 @@ int main(int argc, char *args[])
 	int direction = NONE;
 	while(!done)
 	{
-		move_pacman(direction);
+		int i;
+		for (i=0;i< PACMAN_SPEED;i++) {
+			move_pacman(direction);
+		}
 		draw();
 		while(SDL_PollEvent(&event))
 		{
