@@ -10,7 +10,6 @@ SDL_Surface * init_bitmap(const char file_name[])
 		fprintf(stderr, "Couldn't open %s\n", file_name);
 		exit(1);
 	}
-
 	return tmp;
 }
 
@@ -53,5 +52,9 @@ void draw_dots(void)
 				SDL_BlitSurface(ground_pic, &ground[2], screen, &dot);
 		}
 }
-	
 
+void draw(void) {
+	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
+	draw_dots();
+	SDL_BlitSurface(pacman_left_pic, &pacman[0], screen, &pacman_position);
+}
