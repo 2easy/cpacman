@@ -3,6 +3,7 @@
 #define IMAGE_HEIGHT 25
 #define IMAGE_WIDTH 25
 #define PACMAN_SPEED 3
+#define GHOST_SPEED 3
 #define PACMAN_ANIMATION_SPEED 2
 #define GHOST_ANIMATION_SPEED 5
 
@@ -11,6 +12,7 @@
 #define PILL 2
 #define POWERUP 3
 #define TELEPORT 4
+#define CAGE 5
 #define GHOST 9
 #define PACMAN 80
 

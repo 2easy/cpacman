@@ -12,9 +12,11 @@ int main(int argc, char *args[])
 	pacman_t pacman;
 	ghost_t ghosts[4];
 	int i;
+	srand(time(NULL));
 	for (i=0;i<4;i++) {
 		ghosts[i].animation_state = 0;
 		ghosts[i].direction = LEFT;
+		ghosts[i].image = i;
 	}
 	pacman.animation_state = 0;
 	/*SDL initialization*/
@@ -36,6 +38,9 @@ int main(int argc, char *args[])
 	/*Cutting bitmaps to rectangles arrays*/
 	init_bitmap_rect(pacman.animation, &pacman.position, 23, 15, 5);
 	init_bitmap_rect(ghosts[0].animation, &ghosts[0].position, 11, 15, 2);
+	init_bitmap_rect(ghosts[1].animation, &ghosts[1].position, 11, 15, 2);
+	init_bitmap_rect(ghosts[2].animation, &ghosts[2].position, 11, 15, 2);
+	init_bitmap_rect(ghosts[3].animation, &ghosts[3].position, 11, 15, 2);
 	/*init_bitmap_rect(inky, &inky_position, 14, 13, 4);
 	init_bitmap_rect(pinky, &pinky_position, 14, 14, 4);
 	init_bitmap_rect(clyde, &clyde_position, 14, 15, 4);
@@ -45,15 +50,14 @@ int main(int argc, char *args[])
 
 	pacman.direction = LEFT;
 	int direction = NONE;
-	int right_pressed = 0;
-	int left_pressed = 0;
-	int up_pressed = 0;
-	int down_pressed = 0;
 	while(!done)
 	{
 		int i;
 		for (i=0;i< PACMAN_SPEED;i++) {
 			move_pacman(&pacman,direction);
+		}
+		for (i=0;i< GHOST_SPEED;i++) {
+			move_ghosts(ghosts,&pacman);
 		}
 		draw(&pacman,ghosts);
 		while(SDL_PollEvent(&event))

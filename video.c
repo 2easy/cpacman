@@ -2,10 +2,7 @@
 #include "engine.h"
 #include "constants.h"
 
-static SDL_Surface *blinky_pic[5];
-static SDL_Surface *inky_pic[5];
-static SDL_Surface *pinky_pic[5];
-static SDL_Surface *clyde_pic[5];
+static SDL_Surface *ghost_pic[4][5];
 static SDL_Surface *pacman_pic[5];
 static SDL_Surface *ground_pic;
 static SDL_Surface *map_pic;
@@ -69,8 +66,11 @@ static void draw_pacman(pacman_t* pacman) {
 	SDL_BlitSurface(pacman_pic[pacman->direction], &pacman->animation[anim], screen, &pacman->position);
 }
 static void draw_ghosts(ghost_t* ghosts) {
-	int anim = ((ghosts[0].animation_state++) / GHOST_ANIMATION_SPEED) % 2;
-	SDL_BlitSurface(blinky_pic[ghosts[0].direction], &ghosts[0].animation[anim], screen, &ghosts[0].position);
+	int i;
+	for (i=0;i<4;i++) {
+		int anim = ((ghosts[i].animation_state++) / GHOST_ANIMATION_SPEED) % 2;
+		SDL_BlitSurface(ghost_pic[i][ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+	}
 }
 void draw(pacman_t *pacman,ghost_t* ghosts) {
 	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
@@ -85,10 +85,23 @@ void load_bitmaps(void) {
 	pacman_pic[RIGHT] = init_bitmap("pacman_right.bmp");
 	pacman_pic[LEFT] = init_bitmap("pacman_left.bmp");
 	
-	blinky_pic[UP] = init_bitmap("blinky_up.bmp");
-	blinky_pic[DOWN] = init_bitmap("blinky_down.bmp");
-	blinky_pic[RIGHT] = init_bitmap("blinky_right.bmp");
-	blinky_pic[LEFT] = init_bitmap("blinky_left.bmp");
+	ghost_pic[0][UP] = init_bitmap("blinky_up.bmp");
+	ghost_pic[0][DOWN] = init_bitmap("blinky_down.bmp");
+	ghost_pic[0][RIGHT] = init_bitmap("blinky_right.bmp");
+	ghost_pic[0][LEFT] = init_bitmap("blinky_left.bmp");
+	ghost_pic[1][UP] = init_bitmap("inky_up.bmp");
+	ghost_pic[1][DOWN] = init_bitmap("inky_down.bmp");
+	ghost_pic[1][RIGHT] = init_bitmap("inky_right.bmp");
+	ghost_pic[1][LEFT] = init_bitmap("inky_left.bmp");
+	ghost_pic[2][UP] = init_bitmap("pinky_up.bmp");
+	ghost_pic[2][DOWN] = init_bitmap("pinky_down.bmp");
+	ghost_pic[2][RIGHT] = init_bitmap("pinky_right.bmp");
+	ghost_pic[2][LEFT] = init_bitmap("pinky_left.bmp");
+	ghost_pic[3][UP] = init_bitmap("clyde_up.bmp");
+	ghost_pic[3][DOWN] = init_bitmap("clyde_down.bmp");
+	ghost_pic[3][RIGHT] = init_bitmap("clyde_right.bmp");
+	ghost_pic[3][LEFT] = init_bitmap("clyde_left.bmp");
+
 	ground_pic = init_bitmap("ground.bmp");
 }
 void free_surface(void) {
