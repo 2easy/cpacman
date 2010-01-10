@@ -3,6 +3,7 @@
 
 void move_pacman(int direction)
 {
+	/*turning backwards*/
 	if (
 		direction == UP && pacman_direction == DOWN ||
 		direction == DOWN && pacman_direction == UP ||
@@ -10,6 +11,7 @@ void move_pacman(int direction)
 		direction == LEFT && pacman_direction == RIGHT) {
 		pacman_direction = direction;
 	}
+	
 	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0 && direction) {
 		int x = pacman_position.x / IMAGE_HEIGHT;
 		int y = pacman_position.y / IMAGE_WIDTH;
@@ -31,7 +33,7 @@ void move_pacman(int direction)
 				printf("direction %d\n",direction);
 				exit(0);
 		}
-		if (map[y][x] == EMPTY || map[y][x] == PILL || map[y][x] == POWERUP) {
+		if (map[y][x] == EMPTY || map[y][x] == PILL || map[y][x] == POWERUP || map[y][x] == TELEPORT) {
 			pacman_direction = direction;
 		}
 	}
@@ -62,35 +64,31 @@ void move_pacman(int direction)
 			map[y][x] = EMPTY;
 		} else if (map[y][x] == POWERUP) {
 			map[y][x] = EMPTY;
-		} else {
-			return;
-		}
+		} else if (map[y][x] == TELEPORT) {
+			map[y][x] = EMPTY;
+		} else return;
+		
 		
 	}
-
-	int next_x = pacman_position.x;
-	int next_y = pacman_position.y;
 
 	switch (pacman_direction)
 	{
 		case RIGHT:
-			next_x += 1;
+			pacman_position.x++;
 			break;
 		case LEFT:
-			next_x -= 1;
+			pacman_position.x--;
 			break;
 		case UP:
-			next_y -= 1;
+			pacman_position.y--;
 			break;
 		case DOWN:
-			next_y += 1;
+			pacman_position.y++;
 			break;
 		default:
 			printf("direction %d\n",direction);
 		 	exit(0);
 	}
-	pacman_position.x = next_x;
-	pacman_position.y = next_y;
 
 	/*int next = map[n1][m1];
 	if (next == EMPTY || next == PILL || next == POWERUP) {
