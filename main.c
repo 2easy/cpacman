@@ -103,9 +103,10 @@ int main(int argc, char *args[])
 			}
 		}
 		if (right_pressed) direction = RIGHT;
-		if (left_pressed) direction = LEFT;
-		if (up_pressed) direction = UP;
-		if (down_pressed) direction = DOWN;
+		else if (left_pressed) direction = LEFT;
+		else if (up_pressed) direction = UP;
+		else if (down_pressed) direction = DOWN;
+		else direction = NONE;
 		SDL_Flip(screen);
 	}
 	/*Freeing sounds*/
