@@ -59,14 +59,20 @@ void move_pacman(int direction)
 				printf("direction %d\n",direction);
 				exit(0);
 		}
-		if (map[y][x] == EMPTY) {
-		} else if (map[y][x] == PILL) {
+		if (map[y][x] == PILL) {
 			map[y][x] = EMPTY;
 		} else if (map[y][x] == POWERUP) {
 			map[y][x] = EMPTY;
 		} else if (map[y][x] == TELEPORT) {
-			map[y][x] = EMPTY;
-		} else return;
+			if (x == 29)
+				pacman_position.x = IMAGE_WIDTH;
+			else
+				pacman_position.x = IMAGE_WIDTH * 28;
+			
+			return;
+		} else if (map[y][x] == WALL) {
+			return;
+		}
 		
 		
 	}
