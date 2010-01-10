@@ -4,6 +4,7 @@
 #define IMAGE_WIDTH 25
 #define PACMAN_SPEED 3
 #define PACMAN_ANIMATION_SPEED 2
+#define GHOST_ANIMATION_SPEED 5
 
 #define WALL 0
 #define EMPTY 1

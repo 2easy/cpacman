@@ -17,7 +17,8 @@ typedef struct {
 } pacman_t;
 
 typedef struct {
-	SDL_Surface *image[4];
+	SDL_Rect animation[2];
+	int image;
 	SDL_Rect position;
 	int direction;
 	int animation_state;

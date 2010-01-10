@@ -45,7 +45,7 @@ int init_bitmap_rect(SDL_Rect * name, SDL_Rect * name_destination, int n, int m,
 	return 0;
 }
 
-void draw_dots(void)
+static void draw_dots(void)
 {
 	int i, j;
 	SDL_Rect dot;
@@ -62,16 +62,21 @@ void draw_dots(void)
 		}
 }
 
-void draw_pacman(pacman_t* pacman) {
+static void draw_pacman(pacman_t* pacman) {
 	int anim = (pacman->animation_state++) / PACMAN_ANIMATION_SPEED;
 	if (anim == 9) pacman->animation_state = 0;
 	if (anim > 4) anim = 9-anim;
 	SDL_BlitSurface(pacman_pic[pacman->direction], &pacman->animation[anim], screen, &pacman->position);
 }
-void draw(pacman_t *pacman) {
+static void draw_ghosts(ghost_t* ghosts) {
+	int anim = ((ghosts[0].animation_state++) / GHOST_ANIMATION_SPEED) % 2;
+	SDL_BlitSurface(blinky_pic[ghosts[0].direction], &ghosts[0].animation[anim], screen, &ghosts[0].position);
+}
+void draw(pacman_t *pacman,ghost_t* ghosts) {
 	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
 	draw_dots();
 	draw_pacman(pacman);
+	draw_ghosts(ghosts);
 }
 void load_bitmaps(void) {
 	map_pic = init_bitmap("map.bmp");

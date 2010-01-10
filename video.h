@@ -17,6 +17,6 @@ extern int map[31][30];
 SDL_Surface * init_bitmap (const char * file_name);
 int init_bitmap_rect(SDL_Rect * name, SDL_Rect * name_destination, int m, int n, int quantity);
 void load_bitmaps(void);
-void draw(pacman_t *pacman);
+void draw(pacman_t *pacman,ghost_t *ghosts);
 
 #endif

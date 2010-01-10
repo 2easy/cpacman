@@ -10,6 +10,12 @@ int main(int argc, char *args[])
 {
 	Uint8 * keystate = SDL_GetKeyState(NULL);
 	pacman_t pacman;
+	ghost_t ghosts[4];
+	int i;
+	for (i=0;i<4;i++) {
+		ghosts[i].animation_state = 0;
+		ghosts[i].direction = LEFT;
+	}
 	pacman.animation_state = 0;
 	/*SDL initialization*/
 //SDL_FULLSCREEN
@@ -29,18 +35,13 @@ int main(int argc, char *args[])
 	load_bitmaps();
 	/*Cutting bitmaps to rectangles arrays*/
 	init_bitmap_rect(pacman.animation, &pacman.position, 23, 15, 5);
-	/*init_bitmap_rect(blinky, &blinky_position, 11, 15, 4);
-	init_bitmap_rect(inky, &inky_position, 14, 13, 4);
+	init_bitmap_rect(ghosts[0].animation, &ghosts[0].position, 11, 15, 2);
+	/*init_bitmap_rect(inky, &inky_position, 14, 13, 4);
 	init_bitmap_rect(pinky, &pinky_position, 14, 14, 4);
 	init_bitmap_rect(clyde, &clyde_position, 14, 15, 4);
 	init_bitmap_rect(confused, &clyde_position, 14, 15, 2);*/
+
 	init_bitmap_rect(ground, &background_dest, 0, 1, 3);
-	/*Draw start positions*/
-	/*
-	SDL_BlitSurface(blinky_pic, &blinky[3], screen, &blinky_position);
-	SDL_BlitSurface(inky_pic, &inky[1], screen, &inky_position);
-	SDL_BlitSurface(pinky_pic, &pinky[1], screen, &pinky_position);
-	SDL_BlitSurface(clyde_pic, &clyde[1], screen, &clyde_position);*/
 
 	pacman.direction = LEFT;
 	int direction = NONE;
@@ -54,7 +55,7 @@ int main(int argc, char *args[])
 		for (i=0;i< PACMAN_SPEED;i++) {
 			move_pacman(&pacman,direction);
 		}
-		draw(&pacman);
+		draw(&pacman,ghosts);
 		while(SDL_PollEvent(&event))
 		{
 			if(event.type == SDL_QUIT)
