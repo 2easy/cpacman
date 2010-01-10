@@ -1,15 +1,19 @@
+#ifndef MAIN_H
+
+#define MAIN_H
+
 /*Surfaces declarations*/
 SDL_Surface *screen = NULL;
 SDL_Surface *blinky_pic, *inky_pic, *pinky_pic, *clyde_pic, *confused_pic;
-SDL_Surface *pacman_up_pic, *pacman_down_pic, *pacman_right_pic, *pacman_left_pic;
+SDL_Surface *pacman_pic[5];
 SDL_Surface *ground_pic;
 SDL_Surface *map_pic;
 SDL_Event event;
+/*Pacman sturcture*/
 /*Rectangles declarations*/
 SDL_Rect blinky[4], inky[4], pinky[4], clyde[4], confused[2];
 SDL_Rect blinky_position, inky_position, pinky_position, clyde_position;
-SDL_Rect pacman[5], pacman_position;
-int pacman_direction;
+
 SDL_Rect ground[3], background_dest;
 /*--------------------------Map initialization-------------------------------*/
 /*------0 -> wall, 1 -> ground, 2 -> pill, 3 ->super pill, 4 -> teleport----*/
@@ -48,5 +52,4 @@ int map[31][30] =
 /*--------------------------------------------------------------------------*/
 int done = 0, n = 23, m = 15, state = 0;
 
-
-
+#endif

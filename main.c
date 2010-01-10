@@ -1,13 +1,16 @@
-#include<SDL.h>
-#include"SDL_audio.h"
-#include"sound.h"
-#include"constants.h"
-#include"video.h"
-#include"main.h"
+#include <SDL.h>
+#include "SDL_audio.h"
+#include "sound.h"
+#include "constants.h"
+#include "video.h"
+#include "main.h"
+#include "engine.h"
 
 int main(int argc, char *args[])
 {
 	Uint8 * keystate = SDL_GetKeyState(NULL);
+	pacman_t pacman;
+	pacman.animation_state = 0;
 	/*SDL initialization*/
 //SDL_FULLSCREEN
 	if ((screen = SDL_SetVideoMode(750,775,32,SDL_SWSURFACE)) == NULL)
@@ -23,10 +26,11 @@ int main(int argc, char *args[])
 	}
 	/*Bitmaps initialization*/
 	map_pic = init_bitmap("map.bmp");
-	pacman_up_pic = init_bitmap("pacman_up.bmp");
-	pacman_down_pic = init_bitmap("pacman_down.bmp");
-	pacman_right_pic = init_bitmap("pacman_right.bmp");
-	pacman_left_pic = init_bitmap("pacman_left.bmp");
+	pacman_pic[UP] = init_bitmap("pacman_up.bmp");
+	pacman_pic[DOWN] = init_bitmap("pacman_down.bmp");
+	pacman_pic[RIGHT] = init_bitmap("pacman_right.bmp");
+	pacman_pic[LEFT] = init_bitmap("pacman_left.bmp");
+
 	blinky_pic = init_bitmap("ghost_blinky.bmp");
 	inky_pic = init_bitmap("ghost_inky.bmp");
 	pinky_pic = init_bitmap("ghost_pinky.bmp");
@@ -34,7 +38,7 @@ int main(int argc, char *args[])
 	confused_pic = init_bitmap("confused_ghost.bmp");
 	ground_pic = init_bitmap("ground.bmp");
 	/*Cutting bitmaps to rectangles arrays*/
-	init_bitmap_rect(pacman, &pacman_position, 23, 15, 5);
+	init_bitmap_rect(pacman.animation, &pacman.position, 23, 15, 5);
 	init_bitmap_rect(blinky, &blinky_position, 11, 15, 4);
 	init_bitmap_rect(inky, &inky_position, 14, 13, 4);
 	init_bitmap_rect(pinky, &pinky_position, 14, 14, 4);
@@ -48,7 +52,7 @@ int main(int argc, char *args[])
 	SDL_BlitSurface(pinky_pic, &pinky[1], screen, &pinky_position);
 	SDL_BlitSurface(clyde_pic, &clyde[1], screen, &clyde_position);*/
 
-	pacman_direction = LEFT;
+	pacman.direction = LEFT;
 	int direction = NONE;
 	int right_pressed = 0;
 	int left_pressed = 0;
@@ -58,7 +62,7 @@ int main(int argc, char *args[])
 	{
 		int i;
 		for (i=0;i< PACMAN_SPEED;i++) {
-			move_pacman(direction);
+			move_pacman(&pacman,direction);
 		}
 		draw();
 		while(SDL_PollEvent(&event))
@@ -86,10 +90,10 @@ int main(int argc, char *args[])
 	SDL_FreeWAV(wave.sound);
 	/*Freeing surfaces*/
 	SDL_FreeSurface(map_pic);
-	SDL_FreeSurface(pacman_up_pic);
-	SDL_FreeSurface(pacman_down_pic);
-	SDL_FreeSurface(pacman_right_pic);
-	SDL_FreeSurface(pacman_left_pic);
+	SDL_FreeSurface(pacman_pic[LEFT]);
+	SDL_FreeSurface(pacman_pic[RIGHT]);
+	SDL_FreeSurface(pacman_pic[UP]);
+	SDL_FreeSurface(pacman_pic[DOWN]);
 	SDL_FreeSurface(blinky_pic);
 	SDL_FreeSurface(inky_pic);
 	SDL_FreeSurface(pinky_pic);

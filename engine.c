@@ -1,20 +1,20 @@
-#include"engine.h"
-#include"constants.h"
+#include "engine.h"
+#include "constants.h"
 
-void move_pacman(int direction)
+void move_pacman(pacman_t *pacman,int direction)
 {
 	/*turning backwards*/
 	if (
-		direction == UP && pacman_direction == DOWN ||
-		direction == DOWN && pacman_direction == UP ||
-		direction == RIGHT && pacman_direction == LEFT ||
-		direction == LEFT && pacman_direction == RIGHT) {
-		pacman_direction = direction;
+		direction == UP && pacman->direction == DOWN ||
+		direction == DOWN && pacman->direction == UP ||
+		direction == RIGHT && pacman->direction == LEFT ||
+		direction == LEFT && pacman->direction == RIGHT) {
+		pacman->direction = direction;
 	}
 	
-	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0 && direction) {
-		int x = pacman_position.x / IMAGE_HEIGHT;
-		int y = pacman_position.y / IMAGE_WIDTH;
+	if (pacman->position.x % 25 == 0 && pacman->position.y % 25 == 0 && direction) {
+		int x = pacman->position.x / IMAGE_HEIGHT;
+		int y = pacman->position.y / IMAGE_WIDTH;
 		switch (direction)
 		{
 			case RIGHT:
@@ -34,14 +34,14 @@ void move_pacman(int direction)
 				exit(0);
 		}
 		if (map[y][x] == EMPTY || map[y][x] == PILL || map[y][x] == POWERUP || map[y][x] == TELEPORT) {
-			pacman_direction = direction;
+			pacman->direction = direction;
 		}
 	}
 
-	if (pacman_position.x % 25 == 0 && pacman_position.y % 25 == 0) {
-		int x = pacman_position.x / IMAGE_HEIGHT;
-		int y = pacman_position.y / IMAGE_WIDTH;
-		switch (pacman_direction)
+	if (pacman->position.x % 25 == 0 && pacman->position.y % 25 == 0) {
+		int x = pacman->position.x / IMAGE_HEIGHT;
+		int y = pacman->position.y / IMAGE_WIDTH;
+		switch (pacman->direction)
 		{
 			case RIGHT:
 				x++;
@@ -65,9 +65,9 @@ void move_pacman(int direction)
 			map[y][x] = EMPTY;
 		} else if (map[y][x] == TELEPORT) {
 			if (x == 29) {
-				pacman_position.x = IMAGE_WIDTH;
+				pacman->position.x = IMAGE_WIDTH;
 			} else {
-				pacman_position.x = IMAGE_WIDTH * 28;
+				pacman->position.x = IMAGE_WIDTH * 28;
 			}
 			return;
 		} else if (map[y][x] == WALL) {
@@ -75,19 +75,19 @@ void move_pacman(int direction)
 		}
 	}
 
-	switch (pacman_direction)
+	switch (pacman->direction)
 	{
 		case RIGHT:
-			pacman_position.x++;
+			pacman->position.x++;
 			break;
 		case LEFT:
-			pacman_position.x--;
+			pacman->position.x--;
 			break;
 		case UP:
-			pacman_position.y--;
+			pacman->position.y--;
 			break;
 		case DOWN:
-			pacman_position.y++;
+			pacman->position.y++;
 			break;
 		default:
 			printf("direction %d\n",direction);

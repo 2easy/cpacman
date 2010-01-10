@@ -1,4 +1,5 @@
 #include"video.h"
+#include"engine.h"
 #include"constants.h"
 
 SDL_Surface * init_bitmap(const char file_name[])
@@ -53,8 +54,14 @@ void draw_dots(void)
 		}
 }
 
-void draw(void) {
+void draw_pacman(pacman_t* pacman) {
+	int anim = (pacman->animation_state++)/10;
+	if (anim == 9) pacman->animation_state = 0;
+	if (anim > 4) anim = 9-anim;
+	SDL_BlitSurface(pacman_pic[pacman->direction], &pacman->animation[anim], screen, &pacman->position);
+}
+void draw(pacman_t *pacman) {
 	SDL_BlitSurface(map_pic, NULL, screen, &background_dest);
 	draw_dots();
-	SDL_BlitSurface(pacman_left_pic, &pacman[0], screen, &pacman_position);
+	draw_pacman(pacman);
 }
