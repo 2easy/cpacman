@@ -4,10 +4,6 @@
 
 /*Surfaces declarations*/
 SDL_Surface *screen = NULL;
-SDL_Surface *blinky_pic, *inky_pic, *pinky_pic, *clyde_pic, *confused_pic;
-SDL_Surface *pacman_pic[5];
-SDL_Surface *ground_pic;
-SDL_Surface *map_pic;
 SDL_Event event;
 /*Pacman sturcture*/
 /*Rectangles declarations*/
