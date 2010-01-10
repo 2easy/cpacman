@@ -7,6 +7,7 @@
 
 int main(int argc, char *args[])
 {
+	Uint8 * keystate = SDL_GetKeyState(NULL);
 	/*SDL initialization*/
 //SDL_FULLSCREEN
 	if ((screen = SDL_SetVideoMode(750,775,32,SDL_SWSURFACE)) == NULL)
@@ -64,49 +65,21 @@ int main(int argc, char *args[])
 		{
 			if(event.type == SDL_QUIT)
 				done = 1;
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-					case SDLK_RIGHT:
-						right_pressed = 1;
-						break;
-					case SDLK_LEFT:
-						left_pressed = 1;
-						break;
-					case SDLK_UP:
-						up_pressed = 1;
-						break;
-					case SDLK_DOWN:
-						down_pressed = 1;
-						break;
-					case SDLK_ESCAPE:
-						done = 1;
-						break;
-				}
-			} else if (event.type == SDL_KEYUP) {
-				switch (event.key.keysym.sym)
-				{
-					case SDLK_RIGHT:
-						right_pressed = 0;
-						break;
-					case SDLK_LEFT:
-						left_pressed = 0;
-						break;
-					case SDLK_UP:
-						up_pressed = 0;
-						break;
-					case SDLK_DOWN:
-						down_pressed = 0;
-						break;
-				}
-			}
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+				done = 1;
+
 		}
-		if (right_pressed) direction = RIGHT;
-		else if (left_pressed) direction = LEFT;
-		else if (up_pressed) direction = UP;
-		else if (down_pressed) direction = DOWN;
-		else direction = NONE;
+		if (keystate[SDLK_RIGHT]) {
+			direction = RIGHT;
+		} else if (keystate[SDLK_LEFT]) {
+			direction = LEFT;
+		} else if (keystate[SDLK_UP]) {
+			direction = UP;
+		} else if (keystate[SDLK_DOWN]) {
+			direction = DOWN;
+		} else {
+			direction = NONE;
+		}
 		SDL_Flip(screen);
 	}
 	/*Freeing sounds*/
