@@ -107,6 +107,10 @@ int main(int argc, char *args[])
 	map[14][15] = 9;*/
 	pacman_direction = LEFT;
 	int direction = NONE;
+	int right_pressed = 0;
+	int left_pressed = 0;
+	int up_pressed = 0;
+	int down_pressed = 0;
 	while(!done)
 	{
 		int i;
@@ -123,25 +127,43 @@ int main(int argc, char *args[])
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_RIGHT:
-						direction = RIGHT;
+						right_pressed = 1;
 						break;
 					case SDLK_LEFT:
-						direction = LEFT;
+						left_pressed = 1;
 						break;
 					case SDLK_UP:
-						direction = UP;
+						up_pressed = 1;
 						break;
 					case SDLK_DOWN:
-						direction = DOWN;
+						down_pressed = 1;
 						break;
 					case SDLK_ESCAPE:
 						done = 1;
 						break;
 				}
 			} else if (event.type == SDL_KEYUP) {
-				direction = NONE;
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_RIGHT:
+						right_pressed = 0;
+						break;
+					case SDLK_LEFT:
+						left_pressed = 0;
+						break;
+					case SDLK_UP:
+						up_pressed = 0;
+						break;
+					case SDLK_DOWN:
+						down_pressed = 0;
+						break;
+				}
 			}
 		}
+		if (right_pressed) direction = RIGHT;
+		if (left_pressed) direction = LEFT;
+		if (up_pressed) direction = UP;
+		if (down_pressed) direction = DOWN;
 		SDL_Flip(screen);
 	}
 	/*Freeing sounds*/
