@@ -27,6 +27,7 @@ void map_init(int map[31][30]);
 void move_pacman(pacman_t *pacman,int direction);
 void move_ghosts(ghost_t *ghost,pacman_t *pacman);
 int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);
+int pills_left(void);
 static void set_start_position(SDL_Rect * name_destination, int n, int m);
 void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect * background_dest);
 

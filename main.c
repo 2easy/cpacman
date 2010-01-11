@@ -3,7 +3,6 @@
 #include "sound.h"
 #include "constants.h"
 #include "video.h"
-#include "main.h"
 #include "engine.h"
 /*Surfaces declarations*/
 SDL_Surface *screen = NULL;
@@ -67,6 +66,7 @@ int main(int argc, char *args[])
 		for (i=0;i< GHOST_SPEED;i++) {
 			move_ghosts(ghosts, &pacman);
 		}
+		/*Collision detection*/
 		caught = ghosts_collision(&pacman, ghosts);
 		if (caught) {
 			lifes_left--;
@@ -84,7 +84,19 @@ int main(int argc, char *args[])
 			SDL_Flip(screen);
 			SDL_Delay(1000);
 		}		
-		pills_left();
+		/*Next level*/
+		if (!pills_left()) {
+			map_init(map);
+			set_all_start_positions(&pacman, ghosts, &background_dest);
+			pacman.direction = LEFT;
+			pacman.animation_state = 4 * PACMAN_ANIMATION_SPEED;
+			direction = NONE;
+			caught = NOT_CAUGHT;
+			draw(&pacman, ghosts);
+			draw_lifes(&pacman, lifes_left);
+			SDL_Flip(screen);
+			SDL_Delay(1000);
+		}
 		draw(&pacman, ghosts);
 		draw_lifes(&pacman, lifes_left);
 		SDL_Flip(screen);

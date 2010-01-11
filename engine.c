@@ -209,7 +209,7 @@ int ghosts_collision(pacman_t *pacman, ghost_t *ghosts)
 	return NOT_CAUGHT;
 }
 
-void pills_left(void)
+int pills_left(void)
 {
 	int i, j, pills = 0;
 
@@ -220,11 +220,7 @@ void pills_left(void)
 			}
 		}
 	}
-	
-	if (!(pills)) {
-		printf("You won.\n");
-		exit(0);
-	}
+	return pills;	
 }
 
 static void set_start_position(SDL_Rect *name_destination, int n, int m)
