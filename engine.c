@@ -169,19 +169,58 @@ static void move_ghost(ghost_t *ghost,pacman_t *pacman)
 		 	exit(0);
 	}
 }
-void move_ghosts(ghost_t *ghosts,pacman_t *pacman) {
+
+void move_ghosts(ghost_t *ghosts,pacman_t *pacman) 
+{
 	int i;
+
 	for (i=0;i<4;i++) {
 		move_ghost(ghosts+i,pacman);
 	}
 }
-void ghosts_collision(ghost_t *ghosts,pacman_t *pacman) {
+
+int ghosts_collision(pacman_t *pacman, ghost_t *ghosts)
+{
 	int i;
+
 	for (i=0;i<4;i++) {
 		if (abs(ghosts[i].position.x-pacman->position.x) < 22 && abs(ghosts[i].position.y-pacman->position.y) < 22) {
-		printf("game over patalachu\n");
+			return CAUGHT;
+		}
+	}
+	return NOT_CAUGHT;
+}
+
+void pills_left(void)
+{
+	int i, j, pills = 0;
+
+	for (i = 1; i < 30; i++) {
+		for (j = 1; j < 28; j++) {
+			if (map[j][i] == PILL) {
+				pills++;
+			}
+		}
+	}
+	
+	if (!(pills)) {
+		printf("You won.\n");
 		exit(0);
 	}
-		//move_ghost(ghosts+i,pacman);
-	}
+}
+
+static void set_start_position(SDL_Rect *name_destination, int n, int m)
+{
+	name_destination->x = m * IMAGE_WIDTH;
+	name_destination->y = n * IMAGE_HEIGHT;
+}
+
+void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect *background_dest)
+{
+	set_start_position(&pacman->position, 23, 15);
+	set_start_position(&ghosts[0].position, 11, 15);
+	set_start_position(&ghosts[1].position, 14, 14);
+	set_start_position(&ghosts[2].position, 14, 15);
+	set_start_position(&ghosts[3].position, 14, 16);
+	set_start_position(background_dest, 0, 1);
 }

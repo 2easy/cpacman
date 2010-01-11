@@ -19,12 +19,10 @@ SDL_Surface * init_bitmap(const char file_name[])
 	return tmp;
 }
 
-int init_bitmap_rect(SDL_Rect * name, SDL_Rect * name_destination, int n, int m, int quantity)
+int init_bitmap_rect(SDL_Rect * name, SDL_Rect * name_destination, int quantity)
 {
 	int i, j = 0;
 	/*initializing destination rect*/
-	name_destination->x = m * IMAGE_WIDTH;
-	name_destination->y = n * IMAGE_HEIGHT;
 	name_destination->h = IMAGE_HEIGHT;
 	name_destination->w = IMAGE_WIDTH;
 	/*cutting ghost to the array*/
@@ -46,14 +44,12 @@ static void draw_dots(void)
 {
 	int i, j;
 	SDL_Rect dot;
-	int pills_left=0;
 	for (i = 1; i < 30; i++) {
 		for (j = 1; j < 28; j++) {
 			dot.x = j * IMAGE_WIDTH;
 			dot.y = i * IMAGE_HEIGHT;
 			if (map[i][j] == PILL) {
 				SDL_BlitSurface(ground_pic, &ground[0], screen, &dot);
-				pills_left = 1;
 			} else if (map[i][j] == POWERUP) {
 				SDL_BlitSurface(ground_pic, &ground[1], screen, &dot);
 			} else if (map[i][j] == CAGE) {
@@ -61,22 +57,19 @@ static void draw_dots(void)
 			}
 		}
 	}
-	if (!pills_left) {
-		printf("you pwn\n");
-		exit(0);
-	}
 }
 
 static void draw_pacman(pacman_t* pacman) {
 	int anim = (pacman->animation_state++) / PACMAN_ANIMATION_SPEED;
-	if (anim == 9) pacman->animation_state = 0;
-	if (anim > 4) anim = 9-anim;
+	if (anim == 7) pacman->animation_state = 0;
+	if (anim > 4) anim = 8-anim;
 	SDL_BlitSurface(pacman_pic[pacman->direction], &pacman->animation[anim], screen, &pacman->position);
 }
 static void draw_ghosts(ghost_t* ghosts) {
-	int i;
+	int i, anim;
+
 	for (i=0;i<4;i++) {
-		int anim = ((ghosts[i].animation_state++) / GHOST_ANIMATION_SPEED) % 2;
+		anim = ((ghosts[i].animation_state++) / GHOST_ANIMATION_SPEED) % 2;
 		SDL_BlitSurface(ghost_pic[i][ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
 	}
 }

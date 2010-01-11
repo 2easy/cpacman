@@ -3,9 +3,12 @@
 #define IMAGE_HEIGHT 25
 #define IMAGE_WIDTH 25
 #define PACMAN_SPEED 3
+#define PACMAN_MAX_LIFES 3
 #define GHOST_SPEED 3
+#define NOT_CAUGHT 0
+#define CAUGHT 1
 #define PACMAN_ANIMATION_SPEED 2
-#define GHOST_ANIMATION_SPEED 5
+#define GHOST_ANIMATION_SPEED 10
 
 #define WALL 0
 #define EMPTY 1

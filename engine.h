@@ -4,10 +4,9 @@
 
 #include<SDL.h>
 extern SDL_Event event;
-/*Rectangles declarations*/
 /*Map declaration*/
 extern int map[31][30];
-extern int n, m, done, state;
+extern int n, m, done;
 
 typedef struct {
 	SDL_Rect animation[5];
@@ -26,6 +25,8 @@ typedef struct {
 
 void move_pacman(pacman_t *pacman,int direction);
 void move_ghosts(ghost_t *ghost,pacman_t *pacman);
-void ghosts_collision(ghost_t *ghosts,pacman_t *pacman);
+int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);
+static void set_start_position(SDL_Rect * name_destination, int n, int m);
+void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect * background_dest);
 
 #endif
