@@ -23,6 +23,7 @@ typedef struct {
 	int animation_state;
 } ghost_t;
 
+void map_init(int map[31][30]);
 void move_pacman(pacman_t *pacman,int direction);
 void move_ghosts(ghost_t *ghost,pacman_t *pacman);
 int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);

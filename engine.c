@@ -1,6 +1,24 @@
 #include "engine.h"
 #include "constants.h"
 
+void map_init(int map[31][30]) {
+	int i, j;
+	FILE * map_file;
+	/*Open map file*/
+	if ((map_file = fopen("map.txt", "r")) == NULL)
+	{
+		fprintf(stderr, "Nie mozna otworzyc pliku\"map.txt\"");
+		exit(1);
+	}
+	for (i = 0; i < 31; i++) {
+		for (j = 0; j < 30; j++) {
+			map[i][j] = getc(map_file) - '0';
+		}
+		getc(map_file);
+	}	
+	fclose(map_file);
+}
+
 void move_pacman(pacman_t *pacman,int direction)
 {
 	/*turning backwards*/

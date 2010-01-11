@@ -5,6 +5,14 @@
 #include "video.h"
 #include "main.h"
 #include "engine.h"
+/*Surfaces declarations*/
+SDL_Surface *screen = NULL;
+SDL_Event event;
+/*Pacman sturcture*/
+/*Rectangles declarations*/
+SDL_Rect ground[4], background_dest;
+int map[31][30];
+int done = 0, n = 23, m = 15, state = 0;
 
 int main(int argc, char *args[])
 {
@@ -14,7 +22,7 @@ int main(int argc, char *args[])
 	int i;
 	srand(time(NULL));
 	/*SDL initialization*/
-	if ((screen = SDL_SetVideoMode(900,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN)) == NULL)
+	if ((screen = SDL_SetVideoMode(850,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN)) == NULL)
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -25,6 +33,7 @@ int main(int argc, char *args[])
 		SDL_Quit();
 		exit(1);
 	}
+	map_init(map);
 	/*Bitmaps initialization*/
 	load_bitmaps();
 	/*Cutting bitmaps to rectangles arrays*/
@@ -40,6 +49,7 @@ int main(int argc, char *args[])
 		ghosts[i].direction = LEFT;
 		ghosts[i].image = i;
 	}
+
 	pacman.animation_state = 4 * PACMAN_ANIMATION_SPEED;
 	pacman.direction = LEFT;
 	int direction = NONE;
@@ -59,6 +69,7 @@ int main(int argc, char *args[])
 		}
 		caught = ghosts_collision(&pacman, ghosts);
 		if (caught) {
+			lifes_left--;
 			if (!lifes_left) {
 				printf("Game over.\n");
 				exit(0);
@@ -68,13 +79,14 @@ int main(int argc, char *args[])
 			pacman.animation_state = 4 * PACMAN_ANIMATION_SPEED;
 			direction = NONE;
 			caught = NOT_CAUGHT;
-			lifes_left--;
 			draw(&pacman, ghosts);
+			draw_lifes(&pacman, lifes_left);
 			SDL_Flip(screen);
 			SDL_Delay(1000);
 		}		
 		pills_left();
 		draw(&pacman, ghosts);
+		draw_lifes(&pacman, lifes_left);
 		SDL_Flip(screen);
 		while(SDL_PollEvent(&event))
 		{
@@ -98,7 +110,8 @@ int main(int argc, char *args[])
 	/*Freeing sounds*/
 	SDL_FreeWAV(wave.sound);
 	/*Freeing surfaces*/
-	/*---------------------------*/
+	free_surfaces();
+
 	SDL_Quit();
 	return 0;
 }
