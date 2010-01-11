@@ -175,3 +175,13 @@ void move_ghosts(ghost_t *ghosts,pacman_t *pacman) {
 		move_ghost(ghosts+i,pacman);
 	}
 }
+void ghosts_collision(ghost_t *ghosts,pacman_t *pacman) {
+	int i;
+	for (i=0;i<4;i++) {
+		if (abs(ghosts[i].position.x-pacman->position.x) < 22 && abs(ghosts[i].position.y-pacman->position.y) < 22) {
+		printf("game over patalachu\n");
+		exit(0);
+	}
+		//move_ghost(ghosts+i,pacman);
+	}
+}

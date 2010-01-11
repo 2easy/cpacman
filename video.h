@@ -10,7 +10,7 @@ extern SDL_Event event;
 /*Rectangles declarations*/
 extern SDL_Rect blinky[4], inky[4], pinky[4], clyde[4], confused[2];
 extern SDL_Rect blinky_position, inky_position, pinky_position, clyde_position;
-extern SDL_Rect ground[3], background_dest;
+extern SDL_Rect ground[4], background_dest;
 /*Map declaration*/
 extern int map[31][30];
 

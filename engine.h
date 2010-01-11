@@ -26,5 +26,6 @@ typedef struct {
 
 void move_pacman(pacman_t *pacman,int direction);
 void move_ghosts(ghost_t *ghost,pacman_t *pacman);
+void ghosts_collision(ghost_t *ghosts,pacman_t *pacman);
 
 #endif

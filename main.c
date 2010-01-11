@@ -20,8 +20,8 @@ int main(int argc, char *args[])
 	}
 	pacman.animation_state = 0;
 	/*SDL initialization*/
-//SDL_FULLSCREEN
-	if ((screen = SDL_SetVideoMode(750,775,32,SDL_SWSURFACE)) == NULL)
+
+	if ((screen = SDL_SetVideoMode(750,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN)) == NULL)
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -59,6 +59,7 @@ int main(int argc, char *args[])
 		for (i=0;i< GHOST_SPEED;i++) {
 			move_ghosts(ghosts,&pacman);
 		}
+		ghosts_collision(ghosts,&pacman);
 		draw(&pacman,ghosts);
 		while(SDL_PollEvent(&event))
 		{

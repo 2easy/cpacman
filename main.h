@@ -10,7 +10,7 @@ SDL_Event event;
 SDL_Rect blinky[4], inky[4], pinky[4], clyde[4], confused[2];
 SDL_Rect blinky_position, inky_position, pinky_position, clyde_position;
 
-SDL_Rect ground[3], background_dest;
+SDL_Rect ground[4], background_dest;
 /*--------------------------Map initialization-------------------------------*/
 /*------0 -> wall, 1 -> ground, 2 -> pill, 3 ->super pill, 4 -> teleport----*/
 int map[31][30] =
