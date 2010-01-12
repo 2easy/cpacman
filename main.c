@@ -42,20 +42,11 @@ int main(int argc, char *args[])
 	init_bitmap_rect(ghosts[2].animation, &ghosts[2].position, 2);
 	init_bitmap_rect(ghosts[3].animation, &ghosts[3].position, 2);
 	init_bitmap_rect(ground, &background_dest, 3);
-	/*Characters initialization*/
-	for (i=0;i<4;i++) {
-		ghosts[i].animation_state = 0;
-		ghosts[i].direction = LEFT;
-		ghosts[i].image = i;
-	}
-
-	pacman.animation_state = 4 * PACMAN_ANIMATION_SPEED;
-	pacman.direction = LEFT;
-	int direction = NONE;
-	set_all_start_positions(&pacman, ghosts, &background_dest);
 	/*Last preparations*/
+	int direction = NONE;
 	int caught = NOT_CAUGHT;
 	int lifes_left = PACMAN_MAX_LIFES;
+	characters_init(&pacman, ghosts, &direction, &caught, &background_dest);
 	/*Let's the game begin*/
 	while(!done)
 	{
@@ -74,11 +65,7 @@ int main(int argc, char *args[])
 				printf("Game over.\n");
 				exit(0);
 			}
-			set_all_start_positions(&pacman, ghosts, &background_dest);
-			pacman.direction = LEFT;
-			pacman.animation_state = 4 * PACMAN_ANIMATION_SPEED;
-			direction = NONE;
-			caught = NOT_CAUGHT;
+			characters_init(&pacman, ghosts, &direction, &caught, &background_dest);
 			draw(&pacman, ghosts);
 			draw_lifes(&pacman, lifes_left);
 			SDL_Flip(screen);

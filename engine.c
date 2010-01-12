@@ -12,13 +12,52 @@ void map_init(int map[31][30]) {
 	}
 	for (i = 0; i < 31; i++) {
 		for (j = 0; j < 30; j++) {
-			map[i][j] = getc(map_file) - '0';
+			char c = getc(map_file);
+			switch (c) {
+				case ' ':
+					map[i][j] = EMPTY;
+					break;
+				case '.':
+					map[i][j] = PILL;
+					break;
+				case '#':
+					map[i][j] = WALL;
+					break;
+				case 'P':
+					map[i][j] = POWERUP;
+					break;
+				case 'T':
+					map[i][j] = TELEPORT;
+					break;
+				case 'C':
+					map[i][j] = CAGE;
+					break;
+				default:
+					printf("unknown char: %c\n",c);
+					exit(0);
+				
+			}
 		}
 		getc(map_file);
 	}	
 	fclose(map_file);
 }
 
+void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, int *caught, SDL_Rect *background_dest) {
+	int i;
+
+	for (i=0;i<4;i++) {
+		ghosts[i].animation_state = 0;
+		ghosts[i].direction = LEFT;
+		ghosts[i].image = i;
+		ghosts[i].weakness_state = NORMAL;
+	}
+	pacman->animation_state = 4 * PACMAN_ANIMATION_SPEED;
+	pacman->direction = LEFT;
+	*direction = NONE;
+	*caught = NOT_CAUGHT;
+	set_all_start_positions(pacman, ghosts, background_dest);
+}
 void move_pacman(pacman_t *pacman,int direction)
 {
 	/*turning backwards*/

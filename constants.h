@@ -9,6 +9,9 @@
 #define CAUGHT 1
 #define PACMAN_ANIMATION_SPEED 2
 #define GHOST_ANIMATION_SPEED 10
+#define NORMAL 0
+#define FLASHING 1
+#define WEAK 2
 
 #define WALL 0
 #define EMPTY 1
