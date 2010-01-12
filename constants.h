@@ -12,6 +12,7 @@
 #define NORMAL 0
 #define FLASHING 1
 #define WEAK 2
+#define TIME_TO_RECOVER 750
 
 #define WALL 0
 #define EMPTY 1

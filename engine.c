@@ -35,7 +35,6 @@ void map_init(int map[31][30]) {
 				default:
 					printf("unknown char: %c\n",c);
 					exit(0);
-				
 			}
 		}
 		getc(map_file);
@@ -54,10 +53,12 @@ void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, int *cau
 	}
 	pacman->animation_state = 4 * PACMAN_ANIMATION_SPEED;
 	pacman->direction = LEFT;
+	pacman->slow = 0;
 	*direction = NONE;
 	*caught = NOT_CAUGHT;
 	set_all_start_positions(pacman, ghosts, background_dest);
 }
+
 void move_pacman(pacman_t *pacman,int direction)
 {
 	/*turning backwards*/
@@ -118,8 +119,10 @@ void move_pacman(pacman_t *pacman,int direction)
 		}
 		if (map[y][x] == PILL) {
 			map[y][x] = EMPTY;
+			pacman->slow = 4;
 		} else if (map[y][x] == POWERUP) {
 			map[y][x] = EMPTY;
+			have_power = 1;
 		} else if (map[y][x] == TELEPORT) {
 			if (x == 29) {
 				pacman->position.x = IMAGE_WIDTH;
@@ -241,8 +244,8 @@ int ghosts_collision(pacman_t *pacman, ghost_t *ghosts)
 	int i;
 
 	for (i=0;i<4;i++) {
-		if (abs(ghosts[i].position.x-pacman->position.x) < 22 && abs(ghosts[i].position.y-pacman->position.y) < 22) {
-			return CAUGHT;
+		if (abs(ghosts[i].position.x-pacman->position.x) < 13 && abs(ghosts[i].position.y-pacman->position.y) < 13) {
+			return i;
 		}
 	}
 	return NOT_CAUGHT;
@@ -262,7 +265,7 @@ int pills_left(void)
 	return pills;	
 }
 
-static void set_start_position(SDL_Rect *name_destination, int n, int m)
+void set_start_position(SDL_Rect *name_destination, int n, int m)
 {
 	name_destination->x = m * IMAGE_WIDTH;
 	name_destination->y = n * IMAGE_HEIGHT;

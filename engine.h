@@ -6,13 +6,14 @@
 extern SDL_Event event;
 /*Map declaration*/
 extern int map[31][30];
-extern int n, m, done;
+extern int n, m, done, have_power;
 
 typedef struct {
 	SDL_Rect animation[5];
 	SDL_Rect position;
 	int direction;
 	int animation_state;
+	int slow;
 } pacman_t;
 
 typedef struct {
@@ -30,7 +31,7 @@ void move_pacman(pacman_t *pacman,int direction);
 void move_ghosts(ghost_t *ghost,pacman_t *pacman);
 int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);
 int pills_left(void);
-static void set_start_position(SDL_Rect * name_destination, int n, int m);
+void set_start_position(SDL_Rect * name_destination, int n, int m);
 void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect * background_dest);
 
 #endif

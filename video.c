@@ -3,9 +3,21 @@
 #include "constants.h"
 
 static SDL_Surface *ghost_pic[4][5];
+static SDL_Surface *confused_pic[2];
 static SDL_Surface *pacman_pic[5];
 static SDL_Surface *ground_pic;
 static SDL_Surface *map_pic;
+
+SDL_Surface * init_bitmap(const char file_name[]) {
+	SDL_Surface * tmp = NULL;
+
+	if ((tmp = SDL_LoadBMP(file_name)) == NULL)
+	{
+		fprintf(stderr, "Couldn't open %s\n", file_name);
+		exit(1);
+	}
+	return tmp;
+}
 
 void load_bitmaps(void) {
 	map_pic = init_bitmap("map.bmp");
@@ -30,6 +42,8 @@ void load_bitmaps(void) {
 	ghost_pic[3][DOWN] = init_bitmap("clyde_down.bmp");
 	ghost_pic[3][RIGHT] = init_bitmap("clyde_right.bmp");
 	ghost_pic[3][LEFT] = init_bitmap("clyde_left.bmp");
+	confused_pic[0] = init_bitmap("confused_blue.bmp");
+	confused_pic[1] = init_bitmap("confused_white.bmp");
 
 	ground_pic = init_bitmap("ground.bmp");
 }
@@ -48,18 +62,9 @@ void free_surfaces(void) {
 		SDL_FreeSurface(ghost_pic[i][RIGHT]);
 		SDL_FreeSurface(ghost_pic[i][LEFT]);
 	}
+	SDL_FreeSurface(confused_pic[0]);
+	SDL_FreeSurface(confused_pic[1]);
 	SDL_FreeSurface(ground_pic);
-}
-
-SDL_Surface * init_bitmap(const char file_name[]) {
-	SDL_Surface * tmp = NULL;
-
-	if ((tmp = SDL_LoadBMP(file_name)) == NULL)
-	{
-		fprintf(stderr, "Couldn't open %s\n", file_name);
-		exit(1);
-	}
-	return tmp;
 }
 
 int init_bitmap_rect(SDL_Rect * name, SDL_Rect * name_destination, int quantity) {
@@ -107,12 +112,26 @@ static void draw_pacman(pacman_t* pacman) {
 	SDL_BlitSurface(pacman_pic[pacman->direction], &pacman->animation[anim], screen, &pacman->position);
 }
 
+static blue[4] = {0,0,0,0};
 static void draw_ghosts(ghost_t* ghosts) {
-	int i, anim;
+	int i, anim = 0;
 
-	for (i=0;i<4;i++) {
+	for (i=0; i<4; i++) {
 		anim = ((ghosts[i].animation_state++) / GHOST_ANIMATION_SPEED) % 2;
-		SDL_BlitSurface(ghost_pic[i][ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+		if (ghosts[i].weakness_state == WEAK) {
+			SDL_BlitSurface(confused_pic[0], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+		} else if (ghosts[i].weakness_state == FLASHING) {
+			if (ghosts[i].animation_state % 20 == 0) {
+				blue[i] = !(blue[i]);
+			}
+			if (blue[i]) {
+				SDL_BlitSurface(confused_pic[0], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+			} else { 
+				SDL_BlitSurface(confused_pic[1], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+			}
+		} else {
+			SDL_BlitSurface(ghost_pic[i][ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+		}
 	}
 }
 
