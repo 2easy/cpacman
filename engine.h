@@ -23,11 +23,12 @@ typedef struct {
 	int direction;
 	int animation_state;
 	int weakness_state;
+	int time_to_recover;
 } ghost_t;
 
 void map_init(int map[31][30]);
-void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, int *caught, SDL_Rect *background_dest);
-void move_pacman(pacman_t *pacman,int direction);
+void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, SDL_Rect *background_dest);
+void move_pacman(pacman_t *pacman, int direction, int * score);
 void move_ghosts(ghost_t *ghost,pacman_t *pacman);
 int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);
 int pills_left(void);

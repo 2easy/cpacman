@@ -20,11 +20,11 @@ void map_init(int map[31][30]) {
 				case '.':
 					map[i][j] = PILL;
 					break;
-				case '#':
-					map[i][j] = WALL;
-					break;
 				case 'P':
 					map[i][j] = POWERUP;
+					break;
+				case '#':
+					map[i][j] = WALL;
 					break;
 				case 'T':
 					map[i][j] = TELEPORT;
@@ -42,7 +42,7 @@ void map_init(int map[31][30]) {
 	fclose(map_file);
 }
 
-void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, int *caught, SDL_Rect *background_dest) {
+void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction,  SDL_Rect *background_dest) {
 	int i;
 
 	for (i=0;i<4;i++) {
@@ -50,17 +50,16 @@ void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, int *cau
 		ghosts[i].direction = LEFT;
 		ghosts[i].image = i;
 		ghosts[i].weakness_state = NORMAL;
+		ghosts[i].time_to_recover = 0;
 	}
-	pacman->animation_state = 4 * PACMAN_ANIMATION_SPEED;
+	pacman->animation_state = 0 * PACMAN_ANIMATION_SPEED;
 	pacman->direction = LEFT;
 	pacman->slow = 0;
 	*direction = NONE;
-	*caught = NOT_CAUGHT;
 	set_all_start_positions(pacman, ghosts, background_dest);
 }
 
-void move_pacman(pacman_t *pacman,int direction)
-{
+void move_pacman(pacman_t *pacman, int direction, int *score) {
 	/*turning backwards*/
 	if (
 		direction == UP && pacman->direction == DOWN ||
@@ -69,74 +68,76 @@ void move_pacman(pacman_t *pacman,int direction)
 		direction == LEFT && pacman->direction == RIGHT) {
 		pacman->direction = direction;
 	}
-	
-	if (pacman->position.x % 25 == 0 && pacman->position.y % 25 == 0 && direction) {
+	/*check if pacman is can change direction*/
+	if (pacman->position.x % IMAGE_WIDTH == 0 && pacman->position.y % IMAGE_HEIGHT == 0) {
 		int x = pacman->position.x / IMAGE_HEIGHT;
 		int y = pacman->position.y / IMAGE_WIDTH;
-		switch (direction)
-		{
-			case RIGHT:
-				x++;
-				break;
-			case LEFT:
-				x--;
-				break;
-			case UP:
-				y--;
-				break;
-			case DOWN:
-				y++;
-				break;
-			default:
+		/*check if user pressed the DIRECTION key*/
+		if (direction) {
+			switch (direction)
+			{
+				case RIGHT:
+					x++;
+					break;
+				case LEFT:
+					x--;
+					break;
+				case UP:
+					y--;
+					break;
+				case DOWN:
+					y++;
+					break;
+				default:
 				printf("direction %d\n",direction);
-				exit(0);
-		}
-		if (map[y][x] != WALL && map[y][x] != CAGE) {
-			pacman->direction = direction;
-		}
-	}
+		 		exit(0);
 
-	if (pacman->position.x % 25 == 0 && pacman->position.y % 25 == 0) {
-		int x = pacman->position.x / IMAGE_HEIGHT;
-		int y = pacman->position.y / IMAGE_WIDTH;
-		switch (pacman->direction)
-		{
-			case RIGHT:
-				x++;
-				break;
-			case LEFT:
-				x--;
-				break;
-			case UP:
-				y--;
-				break;
-			case DOWN:
-				y++;
-				break;
-			default:
-				printf("direction %d\n",direction);
-				exit(0);
-		}
+			}
+			if (map[y][x] != WALL && map[y][x] != CAGE) {
+				pacman->direction = direction;
+			}
+		} 
+		x = pacman->position.x / IMAGE_HEIGHT;
+		y = pacman->position.y / IMAGE_WIDTH;
 		if (map[y][x] == PILL) {
+			*score += 10;
 			map[y][x] = EMPTY;
-			pacman->slow = 4;
+			pacman->slow = 5;
 		} else if (map[y][x] == POWERUP) {
 			map[y][x] = EMPTY;
 			have_power = 1;
-		} else if (map[y][x] == TELEPORT) {
+		}
+		switch (pacman->direction) {
+			case RIGHT:
+				x++;
+				break;
+			case LEFT:
+				x--;
+				break;
+			case UP:
+				y--;
+				break;
+			case DOWN:
+				y++;
+				break;
+			default:
+				printf("direction %d\n",pacman->direction);
+		 		exit(0);
+		
+		}
+		if (map[y][x] == TELEPORT) {
 			if (x == 29) {
-				pacman->position.x = IMAGE_WIDTH;
+				pacman->position.x = IMAGE_WIDTH * 1;
 			} else {
 				pacman->position.x = IMAGE_WIDTH * 28;
 			}
 			return;
 		} else if (map[y][x] == WALL) {
-			return;
+				return;
 		}
 	}
-
-	switch (pacman->direction)
-	{
+	/*Move sprite*/	
+	switch (pacman->direction) {
 		case RIGHT:
 			pacman->position.x++;
 			break;
@@ -150,13 +151,13 @@ void move_pacman(pacman_t *pacman,int direction)
 			pacman->position.y++;
 			break;
 		default:
-			printf("direction %d\n",direction);
+			printf("direction %d\n",pacman->direction);
 		 	exit(0);
+
 	}
 }
 
-static void move_ghost(ghost_t *ghost,pacman_t *pacman)
-{
+void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 	int directions[4] = {ghost->direction, ghost->direction, ghost->direction, ghost->direction};
 	int i = 0;
 	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
@@ -230,29 +231,18 @@ static void move_ghost(ghost_t *ghost,pacman_t *pacman)
 	}
 }
 
-void move_ghosts(ghost_t *ghosts,pacman_t *pacman) 
-{
+int ghosts_collision(pacman_t *pacman, ghost_t *ghosts) {
 	int i;
 
 	for (i=0;i<4;i++) {
-		move_ghost(ghosts+i,pacman);
-	}
-}
-
-int ghosts_collision(pacman_t *pacman, ghost_t *ghosts)
-{
-	int i;
-
-	for (i=0;i<4;i++) {
-		if (abs(ghosts[i].position.x-pacman->position.x) < 13 && abs(ghosts[i].position.y-pacman->position.y) < 13) {
+		if (abs(ghosts[i].position.x-pacman->position.x) < TOLERANCE && abs(ghosts[i].position.y-pacman->position.y) < TOLERANCE) {
 			return i;
 		}
 	}
 	return NOT_CAUGHT;
 }
 
-int pills_left(void)
-{
+int pills_left(void) {
 	int i, j, pills = 0;
 
 	for (i = 1; i < 30; i++) {
@@ -265,14 +255,12 @@ int pills_left(void)
 	return pills;	
 }
 
-void set_start_position(SDL_Rect *name_destination, int n, int m)
-{
+void set_start_position(SDL_Rect *name_destination, int n, int m) {
 	name_destination->x = m * IMAGE_WIDTH;
 	name_destination->y = n * IMAGE_HEIGHT;
 }
 
-void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect *background_dest)
-{
+void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect *background_dest) {
 	set_start_position(&pacman->position, 23, 15);
 	set_start_position(&ghosts[0].position, 11, 15);
 	set_start_position(&ghosts[1].position, 14, 14);
