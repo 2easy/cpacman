@@ -20,7 +20,7 @@ int main(int argc, char *args[])
 	int i, j;
 	srand(time(NULL));
 	/*SDL initialization*/
-	if ((screen = SDL_SetVideoMode(850,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF/*|SDL_FULLSCREEN*/)) == NULL)
+	if ((screen = SDL_SetVideoMode(850,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN)) == NULL)
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -53,7 +53,6 @@ int main(int argc, char *args[])
 		int i;
 		int collision;
 		int pacman_speed = PACMAN_SPEED;
-		
 		bring_ghosts_morale_back(ghosts);
 		/*Weaken ghosts if got POWERUP*/
 		if (have_power) {
@@ -95,14 +94,19 @@ int main(int argc, char *args[])
 				SDL_Flip(screen);
 				SDL_Delay(1000);
 			} else if (ghosts[collision].weakness_state == WEAK || ghosts[collision].weakness_state == FLASHING) {
+				SDL_Delay(500);
 				ghosts[collision].weakness_state = DEAD;
 				score += 400;
 			}
 		}
 		/*Slow the ghosts down if they are weak*/
 		for (i = 0; i < 4; i++) {
-			if (ghosts[i].weakness_state == WEAK || ghosts[i].weakness_state == FLASHING) {
+			int state = ghosts[i].weakness_state;
+			if (state == WEAK || state == FLASHING) {
 				ghosts[i].speed = GHOST_SPEED - 2;
+			}
+			if (state == TELEPORTED) {
+				ghosts[i].speed = GHOST_SPEED -1;
 			}
 		}
 		/*Move ghosts around*/
@@ -117,7 +121,6 @@ int main(int argc, char *args[])
 				}
 			}
 		}
-		printf("weaknes_state %d\n", ghosts[0].weakness_state);
 		if (ghosts[0].weakness_state != DEAD) {
 			for (i = 0; i < ghosts[0].speed; i++) {
 				chase_pacman(ghosts, &pacman);

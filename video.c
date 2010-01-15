@@ -21,12 +21,13 @@ SDL_Surface * init_bitmap(const char file_name[]) {
 }
 
 void load_bitmaps(void) {
+	int i, j;
 	map_pic = init_bitmap("map.bmp");
 	pacman_pic[UP] = init_bitmap("pacman_up.bmp");
 	pacman_pic[DOWN] = init_bitmap("pacman_down.bmp");
 	pacman_pic[RIGHT] = init_bitmap("pacman_right.bmp");
 	pacman_pic[LEFT] = init_bitmap("pacman_left.bmp");
-	
+
 	ghost_pic[0][UP] = init_bitmap("blinky_up.bmp");
 	ghost_pic[0][DOWN] = init_bitmap("blinky_down.bmp");
 	ghost_pic[0][RIGHT] = init_bitmap("blinky_right.bmp");
@@ -43,13 +44,40 @@ void load_bitmaps(void) {
 	ghost_pic[3][DOWN] = init_bitmap("clyde_down.bmp");
 	ghost_pic[3][RIGHT] = init_bitmap("clyde_right.bmp");
 	ghost_pic[3][LEFT] = init_bitmap("clyde_left.bmp");
+		
 	confused_pic[0] = init_bitmap("confused_blue.bmp");
 	confused_pic[1] = init_bitmap("confused_white.bmp");
 	eyes_pic[UP] = init_bitmap("eyes_up.bmp");
 	eyes_pic[DOWN] = init_bitmap("eyes_down.bmp");
 	eyes_pic[RIGHT] = init_bitmap("eyes_right.bmp");
 	eyes_pic[LEFT] = init_bitmap("eyes_left.bmp");
-
+	/*Set transparency*/
+	for (i = 1; i < 5; i++) {
+		if (pacman_pic[i] != NULL) {
+		Uint32 colorkey = SDL_MapRGB(pacman_pic[i]->format, 0, 0, 0);
+		SDL_SetColorKey(pacman_pic[i], SDL_RLEACCEL | SDL_SRCCOLORKEY, colorkey);
+		}
+	}
+	for (i = 0; i < 4; i++) {
+		for (j = 1; j < 5; j++) {
+			if (ghost_pic[i][j] != NULL) {
+				Uint32 colorkey = SDL_MapRGB(ghost_pic[i][j]->format, 0, 0, 0);
+				SDL_SetColorKey(ghost_pic[i][j], SDL_RLEACCEL|SDL_SRCCOLORKEY, colorkey);
+			}
+		}
+	}
+	for (i = 0; i < 2; i++) {
+		if (confused_pic[i] != NULL) {
+			Uint32 colorkey = SDL_MapRGB(confused_pic[i]->format, 0, 0, 0);
+			SDL_SetColorKey(confused_pic[i], SDL_RLEACCEL|SDL_SRCCOLORKEY, colorkey);
+		}
+	}
+	for (i = 1; i < 5; i++) {
+		if (eyes_pic[i] != NULL) {
+			Uint32 colorkey = SDL_MapRGB(eyes_pic[i]->format, 0, 0, 0);
+			SDL_SetColorKey(eyes_pic[i], SDL_RLEACCEL|SDL_SRCCOLORKEY, colorkey);
+		}
+	}
 	ground_pic = init_bitmap("ground.bmp");
 }
 
@@ -137,7 +165,7 @@ static void draw_ghosts(ghost_t* ghosts) {
 			} else { 
 				SDL_BlitSurface(confused_pic[1], &ghosts[i].animation[anim], screen, &ghosts[i].position);
 			}
-		} else if (ghosts[i].weakness_state == NORMAL) {
+		} else if (ghosts[i].weakness_state == NORMAL || ghosts[i].weakness_state == TELEPORTED) {
 			SDL_BlitSurface(ghost_pic[i][ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
 		} else {
 			anim = 0;

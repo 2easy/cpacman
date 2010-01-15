@@ -20,8 +20,8 @@ typedef struct {
 	SDL_Rect animation[2];
 	int image;
 	SDL_Rect position;
-	int direction;
 	int speed;
+	int direction;
 	int animation_state;
 	int weakness_state;
 	int time_to_recover;

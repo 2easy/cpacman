@@ -100,9 +100,13 @@ void bring_ghosts_morale_back(ghost_t *ghosts) {
 	for (i = 0; i < 4; i++) {
 		if (ghosts[i].weakness_state != DEAD) {
 			ghosts[i].time_to_recover--;
+			if (ghosts[i].weakness_state == TELEPORTED && ghosts[i].time_to_recover == 0) {
+				ghosts[i].weakness_state = NORMAL;
+			}
 			if (ghosts[i].time_to_recover == (TIME_TO_RECOVER / 3) && ghosts[i].weakness_state == WEAK) {
 					ghosts[i].weakness_state = FLASHING;
 				} else if (ghosts[i].time_to_recover <= 0 && ghosts[i].weakness_state == FLASHING) {
+					ghosts[i].animation_state = 0;
 					ghosts[i].weakness_state = NORMAL;
 					ghosts[i].time_to_recover = 0;
 			}	
@@ -110,7 +114,8 @@ void bring_ghosts_morale_back(ghost_t *ghosts) {
 		if (ghosts[i].weakness_state == NORMAL || ghosts[i].weakness_state == DEAD) {
 			ghosts[i].speed = GHOST_SPEED;
 		}
-		if (ghosts[i].position.x == 14 * IMAGE_WIDTH && ghosts[i].position.y == 14 * IMAGE_HEIGHT) {
+		if (ghosts[i].position.x >= 14 * IMAGE_WIDTH && ghosts[i].position.x <= 15 * IMAGE_WIDTH
+		&& ghosts[i].position.y <= 14 * IMAGE_HEIGHT && ghosts[i].position.y >= 13 * IMAGE_HEIGHT) {
 			ghosts[i].weakness_state = NORMAL;
 		}
 	}
@@ -262,7 +267,10 @@ void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 				exit(0);
 		}
 		if (map[y][x] == TELEPORT) {
-			ghost->speed = 0;
+			if (ghost->weakness_state == NORMAL) {
+				ghost->time_to_recover = AFTER_TELEPORT;
+				ghost->weakness_state = TELEPORTED;
+			}
 			if (x == 29) {
 				ghost->position.x = IMAGE_WIDTH *1;
 			} else {
@@ -362,7 +370,10 @@ void chase_pacman(ghost_t *ghost, pacman_t *pacman) {
 				exit(0);
 		}
 		if (map[y][x] == TELEPORT) {
-			ghost->speed = 0;
+			if (ghost->weakness_state == NORMAL) {
+				ghost->time_to_recover = AFTER_TELEPORT;
+				ghost->weakness_state = TELEPORTED;
+			}
 			if (x == 29) {
 				ghost->position.x = IMAGE_WIDTH *1;
 			} else {
@@ -448,7 +459,10 @@ void move_ghost_to(ghost_t *ghost, int n, int m) {
 				exit(0);
 		}
 		if (map[y][x] == TELEPORT) {
-			ghost->speed = 0;
+			if (ghost->weakness_state == NORMAL) {
+				ghost->time_to_recover = AFTER_TELEPORT;
+				ghost->weakness_state = TELEPORTED;
+			}
 			if (x == 29) {
 				ghost->position.x = IMAGE_WIDTH *1;
 			} else {
