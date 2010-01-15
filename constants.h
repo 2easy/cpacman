@@ -25,6 +25,11 @@
 #define TIME_TO_RECOVER 440
 #define AFTER_TELEPORT 50
 #define TOLERANCE 15
+/*Ghosts*/
+#define BLINKY 0
+#define INKY 1
+#define PINKY 2
+#define CLYDE 3
 /*map*/
 #define WALL 0
 #define EMPTY 1
