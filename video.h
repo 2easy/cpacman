@@ -3,6 +3,7 @@
 #define VIDEO_H
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include "engine.h"
 /*Surfaces declarations*/
 extern SDL_Surface *screen;

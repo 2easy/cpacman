@@ -90,6 +90,7 @@ int init_bitmap_rect(SDL_Rect * name, SDL_Rect * name_destination, int quantity)
 static void draw_dots(void) {
 	int i, j;
 	SDL_Rect dot;
+
 	for (i = 1; i < 30; i++) {
 		for (j = 1; j < 28; j++) {
 			dot.x = j * IMAGE_WIDTH;
@@ -107,6 +108,7 @@ static void draw_dots(void) {
 
 static void draw_pacman(pacman_t* pacman) {
 	int anim = (pacman->animation_state++) / PACMAN_ANIMATION_SPEED;
+
 	if (anim == 7) pacman->animation_state = 0;
 	if (anim > 4) anim = 8-anim;
 	SDL_BlitSurface(pacman_pic[pacman->direction], &pacman->animation[anim], screen, &pacman->position);

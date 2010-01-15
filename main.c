@@ -31,7 +31,7 @@ int main(int argc, char *args[])
 		SDL_Quit();
 		exit(1);
 	}
-
+	/*Menu*/
 	map_init(map);
 	/*Bitmaps initialization*/
 	load_bitmaps();
@@ -59,16 +59,7 @@ int main(int argc, char *args[])
 			pacman.slow--;
 			pacman_speed = PACMAN_SPEED - 1;
 		}
-		/*Bring ghosts morale up*/
-		for (i = 0; i < 4; i++) {
-			ghosts[i].time_to_recover--;
-			if (ghosts[i].time_to_recover == (TIME_TO_RECOVER / 3) && ghosts[i].weakness_state == WEAK) {
-					ghosts[i].weakness_state = FLASHING;
-				} else if (ghosts[i].time_to_recover <= 0 && ghosts[i].weakness_state == FLASHING) {
-					ghosts[i].weakness_state = NORMAL;
-					ghosts[i].time_to_recover = 0;
-			}	
-		}
+		bring_ghosts_morale_back(ghosts);
 		/*Weaken ghosts if got POWERUP*/
 		if (have_power) {
 			for (i = 0; i < 4; i++) {
@@ -91,7 +82,12 @@ int main(int argc, char *args[])
 			} else {
 				lifes_left--;
 				if (!lifes_left) {
-					printf("Game over.\nScore: %d\n", score);
+					int best = hiscore(score);
+					if (score == best) {
+						printf("Congratulations! You have beaten hiscore!\nScore: %d\n", score);
+					} else {
+						printf("Game over. You need more practise.\nScore: %d\nHiscore: %d\n", score, best);
+					}
 					exit(0);
 				}
 				characters_init(&pacman, ghosts, &direction, &background_dest);

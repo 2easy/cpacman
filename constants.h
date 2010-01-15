@@ -1,3 +1,8 @@
+/*menu*/
+#define CHOSEN 0
+#define NEXT 1
+#define PREVIOUS 2
+#define EXIT 3
 /*sizes*/
 #define MAP_HEIGHT 31
 #define MAP_WIDTH 30
@@ -15,7 +20,7 @@
 #define NORMAL 0
 #define FLASHING 1
 #define WEAK 2
-#define TIME_TO_RECOVER 600
+#define TIME_TO_RECOVER 440
 #define TOLERANCE 15
 /*map*/
 #define WALL 0

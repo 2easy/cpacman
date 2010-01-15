@@ -26,13 +26,16 @@ typedef struct {
 	int time_to_recover;
 } ghost_t;
 
+int menu(void);
 void map_init(int map[31][30]);
 void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, SDL_Rect *background_dest);
+void bring_ghosts_morale_back(ghost_t *ghosts);
 void move_pacman(pacman_t *pacman, int direction, int * score);
-void move_ghosts(ghost_t *ghost,pacman_t *pacman);
+void move_ghost(ghost_t *ghost,pacman_t *pacman);
 int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);
 int pills_left(void);
 void set_start_position(SDL_Rect * name_destination, int n, int m);
 void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect * background_dest);
+unsigned int hiscore (unsigned int score); 
 
 #endif

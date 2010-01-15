@@ -1,12 +1,32 @@
 #include "engine.h"
 #include "constants.h"
 
+int menu(void) {
+	SDL_Event event;
+	while(SDL_PollEvent(&event)) {
+		if(event.type == SDL_QUIT) {
+			exit(0);
+		}
+		if (event.type == SDL_KEYDOWN) {
+			switch (event.key.keysym.sym) {
+				case SDLK_SPACE:
+					return CHOSEN;
+				case SDLK_DOWN:
+					return NEXT;
+				case SDLK_UP:
+					return PREVIOUS;
+				case SDLK_BACKSPACE:
+					return EXIT;
+			}
+		}
+	}
+}
+
 void map_init(int map[31][30]) {
 	int i, j;
 	FILE * map_file;
 	/*Open map file*/
-	if ((map_file = fopen("map.txt", "r")) == NULL)
-	{
+	if ((map_file = fopen("map.txt", "r")) == NULL)	{
 		fprintf(stderr, "Nie mozna otworzyc pliku\"map.txt\"");
 		exit(1);
 	}
@@ -59,6 +79,34 @@ void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction,  SDL_Rec
 	set_all_start_positions(pacman, ghosts, background_dest);
 }
 
+void set_start_position(SDL_Rect *name_destination, int n, int m) {
+	name_destination->x = m * IMAGE_WIDTH;
+	name_destination->y = n * IMAGE_HEIGHT;
+}
+
+void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect *background_dest) {
+	set_start_position(&pacman->position, 23, 15);
+	set_start_position(&ghosts[0].position, 11, 15);
+	set_start_position(&ghosts[1].position, 14, 14);
+	set_start_position(&ghosts[2].position, 14, 15);
+	set_start_position(&ghosts[3].position, 14, 16);
+	set_start_position(background_dest, 0, 1);
+}
+
+void bring_ghosts_morale_back(ghost_t *ghosts) {
+	int i;
+
+	for (i = 0; i < 4; i++) {
+		ghosts[i].time_to_recover--;
+		if (ghosts[i].time_to_recover == (TIME_TO_RECOVER / 3) && ghosts[i].weakness_state == WEAK) {
+				ghosts[i].weakness_state = FLASHING;
+			} else if (ghosts[i].time_to_recover <= 0 && ghosts[i].weakness_state == FLASHING) {
+				ghosts[i].weakness_state = NORMAL;
+				ghosts[i].time_to_recover = 0;
+		}	
+	}
+}
+
 void move_pacman(pacman_t *pacman, int direction, int *score) {
 	/*turning backwards*/
 	if (
@@ -89,7 +137,7 @@ void move_pacman(pacman_t *pacman, int direction, int *score) {
 					y++;
 					break;
 				default:
-				printf("direction %d\n",direction);
+				printf("Direction %d\n",direction);
 		 		exit(0);
 
 			}
@@ -176,8 +224,77 @@ void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 			directions[i++] = DOWN;
 		}
 		if (i) ghost->direction = directions[(rand() % i)];
+
+		switch (ghost->direction)
+		{
+			case RIGHT:
+				x++;
+				break;
+			case LEFT:
+				x--;
+				break;
+			case UP:
+				y--;
+				break;
+			case DOWN:
+				y++;
+				break;
+			default:
+				printf("direction %d\n",ghost->direction);
+				exit(0);
+		}
+		if (map[y][x] == TELEPORT) {
+			if (x == 29) {
+				ghost->position.x = IMAGE_WIDTH *1;
+			} else {
+				ghost->position.x = IMAGE_WIDTH * 28;
+			}
+			return;
+		} else if (map[y][x] == WALL) {
+			return;
+		}
 	}
 
+	switch (ghost->direction)
+	{
+		case RIGHT:
+			ghost->position.x++;
+			break;
+		case LEFT:
+			ghost->position.x--;
+			break;
+		case UP:
+			ghost->position.y--;
+			break;
+		case DOWN:
+			ghost->position.y++;
+			break;
+		default:
+			printf("direction %d\n",ghost->direction);
+		 	exit(0);
+	}
+}
+
+void move_blinky(ghost_t *ghost) {
+	int directions[4] = {ghost->direction, ghost->direction, ghost->direction, ghost->direction};
+	int i = 0;
+	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
+		int x = ghost->position.x / IMAGE_HEIGHT;
+		int y = ghost->position.y / IMAGE_WIDTH;
+		if (map[y][x+1] != WALL && ghost->direction != LEFT) {
+			directions[i++] = RIGHT;
+		}
+		if (map[y][x-1] != WALL && ghost->direction != RIGHT) {
+			directions[i++] = LEFT;
+		}
+		if (map[y-1][x] != WALL && ghost->direction != DOWN) {
+			directions[i++] = UP;
+		}
+		if (map[y+1][x] != WALL && ghost->direction != UP) {
+			directions[i++] = DOWN;
+		}
+		if (i) ghost->direction = directions[(rand() % i)];
+	}
 	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
 		int x = ghost->position.x / IMAGE_HEIGHT;
 		int y = ghost->position.y / IMAGE_WIDTH;
@@ -201,7 +318,7 @@ void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 		}
 		if (map[y][x] == TELEPORT) {
 			if (x == 29) {
-				ghost->position.x = IMAGE_WIDTH;
+				ghost->position.x = IMAGE_WIDTH *1;
 			} else {
 				ghost->position.x = IMAGE_WIDTH * 28;
 			}
@@ -255,16 +372,22 @@ int pills_left(void) {
 	return pills;	
 }
 
-void set_start_position(SDL_Rect *name_destination, int n, int m) {
-	name_destination->x = m * IMAGE_WIDTH;
-	name_destination->y = n * IMAGE_HEIGHT;
-}
+unsigned int hiscore (unsigned int score) {
+	FILE * hisc;
+	unsigned int hiscore;
 
-void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect *background_dest) {
-	set_start_position(&pacman->position, 23, 15);
-	set_start_position(&ghosts[0].position, 11, 15);
-	set_start_position(&ghosts[1].position, 14, 14);
-	set_start_position(&ghosts[2].position, 14, 15);
-	set_start_position(&ghosts[3].position, 14, 16);
-	set_start_position(background_dest, 0, 1);
+	if ((hisc = fopen("hiscore.txt", "r+b")) == NULL) {
+		fprintf(stderr, "Nie mozna otworzyc pliku\"hiscore.txt\"");
+		exit(1);
+	}
+
+	fread(&hiscore, sizeof (unsigned int), 1, hisc);
+	if (score > hiscore) {
+		hiscore = score;
+		fclose(hisc);
+		hisc = fopen("hiscore.txt", "w");
+		fwrite(&score, sizeof (unsigned int), 1, hisc);
+	}
+	fclose(hisc);
+	return hiscore;
 }
