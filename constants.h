@@ -20,6 +20,7 @@
 #define NORMAL 0
 #define FLASHING 1
 #define WEAK 2
+#define DEAD -1
 #define TIME_TO_RECOVER 440
 #define TOLERANCE 15
 /*map*/

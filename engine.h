@@ -6,7 +6,7 @@
 extern SDL_Event event;
 /*Map declaration*/
 extern int map[31][30];
-extern int n, m, done, have_power;
+extern int n, m, have_power;
 
 typedef struct {
 	SDL_Rect animation[5];
@@ -21,6 +21,7 @@ typedef struct {
 	int image;
 	SDL_Rect position;
 	int direction;
+	int speed;
 	int animation_state;
 	int weakness_state;
 	int time_to_recover;
@@ -32,10 +33,11 @@ void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction, SDL_Rect
 void bring_ghosts_morale_back(ghost_t *ghosts);
 void move_pacman(pacman_t *pacman, int direction, int * score);
 void move_ghost(ghost_t *ghost,pacman_t *pacman);
+void chase_pacman(ghost_t *ghost, pacman_t *pacman);
 int ghosts_collision(pacman_t *pacman, ghost_t *ghosts);
 int pills_left(void);
 void set_start_position(SDL_Rect * name_destination, int n, int m);
 void set_all_start_positions(pacman_t *pacman, ghost_t *ghosts, SDL_Rect * background_dest);
-unsigned int hiscore (unsigned int score); 
+unsigned int high_score (unsigned int score); 
 
 #endif

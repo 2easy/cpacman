@@ -4,6 +4,7 @@
 
 static SDL_Surface *ghost_pic[4][5];
 static SDL_Surface *confused_pic[2];
+static SDL_Surface *eyes_pic[5];
 static SDL_Surface *pacman_pic[5];
 static SDL_Surface *ground_pic;
 static SDL_Surface *map_pic;
@@ -44,6 +45,10 @@ void load_bitmaps(void) {
 	ghost_pic[3][LEFT] = init_bitmap("clyde_left.bmp");
 	confused_pic[0] = init_bitmap("confused_blue.bmp");
 	confused_pic[1] = init_bitmap("confused_white.bmp");
+	eyes_pic[UP] = init_bitmap("eyes_up.bmp");
+	eyes_pic[DOWN] = init_bitmap("eyes_down.bmp");
+	eyes_pic[RIGHT] = init_bitmap("eyes_right.bmp");
+	eyes_pic[LEFT] = init_bitmap("eyes_left.bmp");
 
 	ground_pic = init_bitmap("ground.bmp");
 }
@@ -64,6 +69,9 @@ void free_surfaces(void) {
 	}
 	SDL_FreeSurface(confused_pic[0]);
 	SDL_FreeSurface(confused_pic[1]);
+	for (i = 0; i < 5; i++) {
+		SDL_FreeSurface(eyes_pic[i]);
+	}
 	SDL_FreeSurface(ground_pic);
 }
 
@@ -99,8 +107,6 @@ static void draw_dots(void) {
 				SDL_BlitSurface(ground_pic, &ground[0], screen, &dot);
 			} else if (map[i][j] == POWERUP) {
 				SDL_BlitSurface(ground_pic, &ground[1], screen, &dot);
-			} else if (map[i][j] == CAGE) {
-				SDL_BlitSurface(ground_pic, &ground[2], screen, &dot);
 			}
 		}
 	}
@@ -131,8 +137,11 @@ static void draw_ghosts(ghost_t* ghosts) {
 			} else { 
 				SDL_BlitSurface(confused_pic[1], &ghosts[i].animation[anim], screen, &ghosts[i].position);
 			}
-		} else {
+		} else if (ghosts[i].weakness_state == NORMAL) {
 			SDL_BlitSurface(ghost_pic[i][ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
+		} else {
+			anim = 0;
+			SDL_BlitSurface(eyes_pic[ghosts[i].direction], &ghosts[i].animation[anim], screen, &ghosts[i].position);
 		}
 	}
 }

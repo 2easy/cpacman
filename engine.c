@@ -69,6 +69,7 @@ void characters_init(pacman_t *pacman, ghost_t *ghosts, int *direction,  SDL_Rec
 		ghosts[i].animation_state = 0;
 		ghosts[i].direction = LEFT;
 		ghosts[i].image = i;
+		ghosts[i].speed = GHOST_SPEED;
 		ghosts[i].weakness_state = NORMAL;
 		ghosts[i].time_to_recover = 0;
 	}
@@ -97,13 +98,21 @@ void bring_ghosts_morale_back(ghost_t *ghosts) {
 	int i;
 
 	for (i = 0; i < 4; i++) {
-		ghosts[i].time_to_recover--;
-		if (ghosts[i].time_to_recover == (TIME_TO_RECOVER / 3) && ghosts[i].weakness_state == WEAK) {
-				ghosts[i].weakness_state = FLASHING;
-			} else if (ghosts[i].time_to_recover <= 0 && ghosts[i].weakness_state == FLASHING) {
-				ghosts[i].weakness_state = NORMAL;
-				ghosts[i].time_to_recover = 0;
-		}	
+		if (ghosts[i].weakness_state != DEAD) {
+			ghosts[i].time_to_recover--;
+			if (ghosts[i].time_to_recover == (TIME_TO_RECOVER / 3) && ghosts[i].weakness_state == WEAK) {
+					ghosts[i].weakness_state = FLASHING;
+				} else if (ghosts[i].time_to_recover <= 0 && ghosts[i].weakness_state == FLASHING) {
+					ghosts[i].weakness_state = NORMAL;
+					ghosts[i].time_to_recover = 0;
+			}	
+		}
+		if (ghosts[i].weakness_state == NORMAL || ghosts[i].weakness_state == DEAD) {
+			ghosts[i].speed = GHOST_SPEED;
+		}
+		if (ghosts[i].position.x == 14 * IMAGE_WIDTH && ghosts[i].position.y == 14 * IMAGE_HEIGHT) {
+			ghosts[i].weakness_state = NORMAL;
+		}
 	}
 }
 
@@ -211,20 +220,29 @@ void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
 		int x = ghost->position.x / IMAGE_HEIGHT;
 		int y = ghost->position.y / IMAGE_WIDTH;
-		if (map[y][x+1] != WALL && ghost->direction != LEFT) {
-			directions[i++] = RIGHT;
+		if (map[y][x] == CAGE) {
+			if (map[y-1][x] != WALL) {
+				ghost->direction = UP;
+			} else if (map[y][x-1] != WALL) {
+				ghost->direction = LEFT;
+			} else {
+				ghost->direction = RIGHT;
+			}
+		} else {
+			if (map[y][x+1] != WALL && ghost->direction != LEFT) {
+				directions[i++] = RIGHT;
+			}
+			if (map[y][x-1] != WALL && ghost->direction != RIGHT) {
+				directions[i++] = LEFT;
+			}
+			if (map[y-1][x] != WALL && ghost->direction != DOWN) {
+				directions[i++] = UP;
+			}
+			if (map[y+1][x] != WALL && map[y+1][x] != CAGE && ghost->direction != UP) {
+				directions[i++] = DOWN;
+			}
+			if (i) ghost->direction = directions[(rand() % i)];
 		}
-		if (map[y][x-1] != WALL && ghost->direction != RIGHT) {
-			directions[i++] = LEFT;
-		}
-		if (map[y-1][x] != WALL && ghost->direction != DOWN) {
-			directions[i++] = UP;
-		}
-		if (map[y+1][x] != WALL && ghost->direction != UP) {
-			directions[i++] = DOWN;
-		}
-		if (i) ghost->direction = directions[(rand() % i)];
-
 		switch (ghost->direction)
 		{
 			case RIGHT:
@@ -244,6 +262,7 @@ void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 				exit(0);
 		}
 		if (map[y][x] == TELEPORT) {
+			ghost->speed = 0;
 			if (x == 29) {
 				ghost->position.x = IMAGE_WIDTH *1;
 			} else {
@@ -275,29 +294,55 @@ void move_ghost(ghost_t *ghost,pacman_t *pacman) {
 	}
 }
 
-void move_blinky(ghost_t *ghost) {
+void chase_pacman(ghost_t *ghost, pacman_t *pacman) {
 	int directions[4] = {ghost->direction, ghost->direction, ghost->direction, ghost->direction};
 	int i = 0;
+	/*allot tactic*/
+	int tactic = rand() % 4;
 	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
 		int x = ghost->position.x / IMAGE_HEIGHT;
 		int y = ghost->position.y / IMAGE_WIDTH;
-		if (map[y][x+1] != WALL && ghost->direction != LEFT) {
-			directions[i++] = RIGHT;
+		/*Get the ghost out of the cage*/
+		if (map[y][x] == CAGE) {
+			if (map[y-1][x] != WALL) {
+				ghost->direction = UP;
+			} else if (map[y][x-1] != WALL) {
+				ghost->direction = LEFT;
+			} else {
+				ghost->direction = RIGHT;
+			}
+		} else { if (tactic) {
+				if (ghost->position.x < pacman->position.x && map[y][x+1] != WALL && ghost->direction != LEFT) {
+					ghost->direction = RIGHT;
+					i++;
+				} else if (ghost->position.x > pacman->position.x && map[y][x-1] != WALL && ghost->direction != RIGHT) {
+					ghost->direction = LEFT;
+					i++;
+				} else if (ghost->position.y < pacman->position.y && map[y+1][x] != WALL && map[y+1][x] != CAGE && ghost->direction != UP) {
+					ghost->direction = DOWN;
+					i++;
+				} else if (ghost->position.y > pacman->position.y && map[y-1][x] != WALL && ghost->direction != DOWN) {
+					ghost->direction = UP;
+					i++;
+				}
+			if (!i) {
+				if (map[y][x+1] != WALL && ghost->direction != LEFT) {
+					directions[i++] = RIGHT;
+				}
+				if (map[y][x-1] != WALL && ghost->direction != RIGHT) {
+					directions[i++] = LEFT;
+				}
+				if (map[y-1][x] != WALL && ghost->direction != DOWN) {
+					directions[i++] = UP;
+				}
+				if (map[y+1][x] != WALL && ghost->direction != UP) {
+					directions[i++] = DOWN;
+				}
+				if (i) ghost->direction = directions[(rand() % i)];
+			}
 		}
-		if (map[y][x-1] != WALL && ghost->direction != RIGHT) {
-			directions[i++] = LEFT;
 		}
-		if (map[y-1][x] != WALL && ghost->direction != DOWN) {
-			directions[i++] = UP;
-		}
-		if (map[y+1][x] != WALL && ghost->direction != UP) {
-			directions[i++] = DOWN;
-		}
-		if (i) ghost->direction = directions[(rand() % i)];
-	}
-	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
-		int x = ghost->position.x / IMAGE_HEIGHT;
-		int y = ghost->position.y / IMAGE_WIDTH;
+
 		switch (ghost->direction)
 		{
 			case RIGHT:
@@ -317,6 +362,93 @@ void move_blinky(ghost_t *ghost) {
 				exit(0);
 		}
 		if (map[y][x] == TELEPORT) {
+			ghost->speed = 0;
+			if (x == 29) {
+				ghost->position.x = IMAGE_WIDTH *1;
+			} else {
+				ghost->position.x = IMAGE_WIDTH * 28;
+			}
+			return;
+		} else if (map[y][x] == WALL) {
+			return;
+		}
+	}
+
+	switch (ghost->direction)
+	{
+		case RIGHT:
+			ghost->position.x++;
+			break;
+		case LEFT:
+			ghost->position.x--;
+			break;
+		case UP:
+			ghost->position.y--;
+			break;
+		case DOWN:
+			ghost->position.y++;
+			break;
+		default:
+			printf("direction %d\n",ghost->direction);
+		 	exit(0);
+	}
+}
+
+void move_ghost_to(ghost_t *ghost, int n, int m) {
+	int directions[4] = {ghost->direction, ghost->direction, ghost->direction, ghost->direction};
+	int i = 0;
+	
+	if (ghost->position.x % 25 == 0 && ghost->position.y % 25 == 0) {
+		int x = ghost->position.x / IMAGE_HEIGHT;
+		int y = ghost->position.y / IMAGE_WIDTH;
+		if (ghost->position.x < m * IMAGE_WIDTH && map[y][x+1] != WALL && ghost->direction != LEFT) {
+			ghost->direction = RIGHT;
+			i++;
+		} else if (ghost->position.x > m * IMAGE_WIDTH && map[y][x-1] != WALL && ghost->direction != RIGHT) {
+			ghost->direction = LEFT;
+			i++;
+		} else if (ghost->position.y < n * IMAGE_HEIGHT && map[y+1][x] != WALL && ghost->direction != UP) {
+			ghost->direction = DOWN;
+			i++;
+		} else if (ghost->position.y > n * IMAGE_HEIGHT && map[y-1][x] != WALL && ghost->direction != DOWN) {
+			ghost->direction = UP;
+			i++;
+		}
+		if (!i) {
+			if (map[y][x+1] != WALL && ghost->direction != LEFT) {
+				directions[i++] = RIGHT;
+			}
+			if (map[y][x-1] != WALL && ghost->direction != RIGHT) {
+				directions[i++] = LEFT;
+			}
+			if (map[y-1][x] != WALL && ghost->direction != DOWN) {
+				directions[i++] = UP;
+			}
+			if (map[y+1][x] != WALL && ghost->direction != UP) {
+				directions[i++] = DOWN;
+			}
+			if (i) ghost->direction = directions[(rand() % i)];
+		}
+		switch (ghost->direction)
+		{
+			case RIGHT:
+				x++;
+				break;
+			case LEFT:
+				x--;
+				break;
+			case UP:
+				y--;
+				break;
+			case DOWN:
+				y++;
+				break;
+			default:
+				printf("direction %d\n",ghost->direction);
+				exit(0);
+		}
+		if (map[y][x] == TELEPORT) {
+			ghost->speed = 0;
 			if (x == 29) {
 				ghost->position.x = IMAGE_WIDTH *1;
 			} else {
@@ -372,12 +504,12 @@ int pills_left(void) {
 	return pills;	
 }
 
-unsigned int hiscore (unsigned int score) {
+unsigned int high_score (unsigned int score) {
 	FILE * hisc;
 	unsigned int hiscore;
 
 	if ((hisc = fopen("hiscore.txt", "r+b")) == NULL) {
-		fprintf(stderr, "Nie mozna otworzyc pliku\"hiscore.txt\"");
+		fprintf(stderr, "Nie mozna otworzyc pliku\"high_score.txt\"");
 		exit(1);
 	}
 

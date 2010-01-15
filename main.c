@@ -10,7 +10,7 @@ SDL_Event event;
 /*Rectangles declarations*/
 SDL_Rect ground[4], background_dest;
 int map[31][30];
-int done = 0, n = 23, m = 15, have_power = 0;
+int n = 23, m = 15, have_power = 0;
 
 int main(int argc, char *args[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char *args[])
 	int i, j;
 	srand(time(NULL));
 	/*SDL initialization*/
-	if ((screen = SDL_SetVideoMode(850,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN)) == NULL)
+	if ((screen = SDL_SetVideoMode(850,775,32,SDL_SWSURFACE|SDL_DOUBLEBUF/*|SDL_FULLSCREEN*/)) == NULL)
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -45,7 +45,7 @@ int main(int argc, char *args[])
 	/*Last preparations*/
 	int direction = NONE;
 	int lifes_left = PACMAN_MAX_LIFES;
-	unsigned int score = 0, level = 1;
+	unsigned int score = 0, level = 1, done = 0;
 	characters_init(&pacman, ghosts, &direction, &background_dest);
 	/*Let's the game begin*/
 	while(!done)
@@ -53,20 +53,22 @@ int main(int argc, char *args[])
 		int i;
 		int collision;
 		int pacman_speed = PACMAN_SPEED;
-		int ghosts_speed[4] = {GHOST_SPEED, GHOST_SPEED, GHOST_SPEED, GHOST_SPEED}; 
-		/*Slow down eating pacman*/
-		if (pacman.slow) {
-			pacman.slow--;
-			pacman_speed = PACMAN_SPEED - 1;
-		}
+		
 		bring_ghosts_morale_back(ghosts);
 		/*Weaken ghosts if got POWERUP*/
 		if (have_power) {
 			for (i = 0; i < 4; i++) {
-				ghosts[i].weakness_state = WEAK;
-				ghosts[i].time_to_recover = TIME_TO_RECOVER;
-				have_power = 0;
+				if (ghosts[i].weakness_state != DEAD) {
+					ghosts[i].weakness_state = WEAK;
+					ghosts[i].time_to_recover = TIME_TO_RECOVER;
+				}
 			}
+			have_power = 0;
+		}
+		/*Slow down eating pacman*/
+		if (pacman.slow) {
+			pacman.slow--;
+			pacman_speed = PACMAN_SPEED - 1;
 		}
 		/*Move pacman*/
 		for (i = 0; i < pacman_speed; i++) {
@@ -74,15 +76,12 @@ int main(int argc, char *args[])
 		}
 		/*Collision detection*/
 		collision = ghosts_collision(&pacman, ghosts);
+
 		if (collision != NOT_CAUGHT) {
-			if (ghosts[collision].weakness_state != NORMAL) {
-				set_start_position(&(ghosts[collision].position), 14, 14);
-				ghosts[collision].weakness_state = NORMAL;
-				score += 400;
-			} else {
+			if (ghosts[collision].weakness_state == NORMAL) {
 				lifes_left--;
 				if (!lifes_left) {
-					int best = hiscore(score);
+					int best = high_score(score);
 					if (score == best) {
 						printf("Congratulations! You have beaten hiscore!\nScore: %d\n", score);
 					} else {
@@ -95,18 +94,37 @@ int main(int argc, char *args[])
 				draw_lifes(&pacman, lifes_left);
 				SDL_Flip(screen);
 				SDL_Delay(1000);
+			} else if (ghosts[collision].weakness_state == WEAK || ghosts[collision].weakness_state == FLASHING) {
+				ghosts[collision].weakness_state = DEAD;
+				score += 400;
 			}
 		}
 		/*Slow the ghosts down if they are weak*/
 		for (i = 0; i < 4; i++) {
-			if (ghosts[i].weakness_state != NORMAL) {
-				ghosts_speed[i] = GHOST_SPEED - 2;
+			if (ghosts[i].weakness_state == WEAK || ghosts[i].weakness_state == FLASHING) {
+				ghosts[i].speed = GHOST_SPEED - 2;
 			}
 		}
-		/*Move ghosts around*/	
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < ghosts_speed[i]; j++) {
-				move_ghost(ghosts + i, &pacman);
+		/*Move ghosts around*/
+		for (i = 1; i < 4; i++) {
+			if (ghosts[i].weakness_state != DEAD) {
+				for (j = 0; j < ghosts[i].speed; j++) {
+					move_ghost(ghosts + i, &pacman);
+				}
+			} else {
+				for (j = 0; j < ghosts[i].speed; j++) {
+					move_ghost_to(ghosts + i, 14, 14);
+				}
+			}
+		}
+		printf("weaknes_state %d\n", ghosts[0].weakness_state);
+		if (ghosts[0].weakness_state != DEAD) {
+			for (i = 0; i < ghosts[0].speed; i++) {
+				chase_pacman(ghosts, &pacman);
+			}
+		} else {
+			for (i = 0; i < ghosts[0].speed; i++) {
+				move_ghost_to(ghosts, 14, 14);
 			}
 		}
 		/*Next level*/

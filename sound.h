@@ -4,6 +4,7 @@
 
 #include "SDL_audio.h"
 #include "SDL_mixer.h"
+
 struct {
 	SDL_AudioSpec spec;
 	Uint8   *sound;			/* Pointer to wave data */
